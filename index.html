@@ -786,66 +786,20 @@
         // Mount the Vue application to the '#app' div
         app.mount('#app');
 
-        // --- PWA Service Worker ---
+        // --- PWA Service Worker Registration ---
         // Register a service worker for offline capabilities
+        // The service worker file (sw.js) must be served from the same origin as this HTML file.
+        // Please save the content below into a file named 'sw.js' in the same directory as your index.html.
         if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
-            const swContent = `
-                const CACHE_NAME = 'forest-inventory-cache-v3'; // Updated cache version
-                const URLS_TO_CACHE = [
-                    './',
-                    'https://cdn.tailwindcss.com/',
-                    'https://unpkg.com/vue@3/dist/vue.global.js',
-                    'https://unpkg.com/vue-router@4/dist/vue-router.global.js',
-                    'https://unpkg.com/dexie@3/dist/dexie.js',
-                    'https://unpkg.com/primeicons/primeicons.css' // Added PrimeIcons to cache
-                ];
-
-                self.addEventListener('install', e => {
-                    e.waitUntil(
-                        caches.open(CACHE_NAME).then(c => {
-                            console.log('Service Worker: Caching assets');
-                            return c.addAll(URLS_TO_CACHE);
-                        }).catch(error => {
-                            console.error('Service Worker: Caching failed', error);
-                        })
-                    );
-                });
-
-                self.addEventListener('fetch', e => {
-                    if (e.request.method !== 'GET') return; // Only cache GET requests
-
-                    e.respondWith(
-                        caches.match(e.request).then(r => {
-                            // Return cached response if available, otherwise fetch from network
-                            return r || fetch(e.request).then(res => {
-                                // If fetch is successful, clone response and put in cache
-                                if (res && res.status === 200) {
-                                    const clone = res.clone();
-                                    caches.open(CACHE_NAME).then(c => {
-                                        c.put(e.request, clone);
-                                    });
-                                }
-                                return res;
-                            });
-                        }).catch(error => {
-                            console.error('Service Worker: Fetch failed', error);
-                            // You could return an offline page here
-                        })
-                    );
-                });
-            `;
-            const swBlob = new Blob([swContent], { type: 'application/javascript' });
-            const swUrl = URL.createObjectURL(swBlob);
-
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register(swUrl).then(reg => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
                     console.log('Service Worker registered successfully:', reg);
                 }).catch(err => {
                     console.error('Service Worker registration failed:', err);
                 });
             });
         } else if ('serviceWorker' in navigator) {
-             console.warn('Service Worker not registered. To enable offline PWA features, please serve this HTML file over a local server (http://localhost).');
+             console.warn('Service Worker not registered. To enable offline PWA features, please serve this HTML file over a local server (http://localhost) or HTTPS.');
         }
     </script>
 </body>
