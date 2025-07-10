@@ -4,22 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forest Inventory PWA</title>
+    <link rel="icon" href="https://placehold.co/192x192/25635b/31363f?text=FIx" type="image/png">
 
-    <!-- Tailwind CSS for styling -->
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Vue 3 and Vue Router -->
+    <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/vue-router@4/dist/vue-router.global.js"></script>
 
     <!-- Dexie.js for IndexedDB -->
     <script src="https://unpkg.com/dexie@3/dist/dexie.js"></script>
 
-    <!-- Lucide Icons for a clean UI -->
-    <script src="https://unpkg.com/lucide-vue-next"></script>
+    <!-- PrimeIcons CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
 
     <!-- Web App Manifest -->
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkZvcmVzdCBJbnZlbnRvcnkgUFdBIiwKICAic2hvcnRfbmFtZSI6ICJGb3Jlc3RJeCIsCiAgImRlc2NyaXB0aW9uIjogIkFuIG9mZmxpbmUtZmlyc3QgUFdBIGZvciBjb2xsZWN0aW5nIGZvcmVzdCBpbnZlbnRvcnkgZGF0YS4iLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL3BsYWNlaG9sZC5jby8xOTJ4MTkyLzI1NjM1Yi8zMTM2M2Y/dGV4dD1Gb3Jlc3RJeCIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfSwKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL3BsYWNlaG9sZC5jby81MTJ4NTEyLzI1NjM1Yi8zMTM2M2Y/dGV4dD1Gb3Jlc3RJeCIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfQogIF0sCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAidGhlbWVfY29sb3IiOiAiIzI1NjM1YiIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2Y4ZmFmYyIKfQ==">
+    <link rel="manifest" href="data:application/json;base64,ew0KICAibmFtZSI6ICJGb3Jlc3QgSW52ZW50b3J5IFBXQSIsDQogICJzaG9ydF9uYW1lIjogIkZJeCIsDQogICJkZXNjcmlwdGlvbiI6ICJBbiBvZmZsaW5lLWZpcnN0IFBXQSBmb3IgY29sbGVjdGluZyBmb3Jlc3QgaW52ZW50b3J5IGRhdGEuIiwNCiAgImljb25zIjogWw0KICAgIHsNCiAgICAgICJzcmMiOiAiaHR0cHM6Ly9wbGFjZWhvbGQuY28vMTkyeDE5Mi8yNTYzNWIvMzEzNjNmP3RleHQ9Rkl4IiwNCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwNCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyINCiAgICB9LA0KICAgIHsNCiAgICAgICJzcmMiOiAiaHR0cHM6Ly9wbGFjZWhvbGQuY28vNTEyeDUxMi8yNTYzNWIvMzEzNjNmP3RleHQ9Rkl4IiwNCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwNCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyINCiAgICB9DQogIF0sDQogICJzdGFydF91cmwiOiAiLiIsDQogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLA0KICAidGhlbWVfY29sb3IiOiAiIzI1NjM1YiIsDQogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmOGZhZmMiDQp9">
     <meta name="theme-color" content="#25635b">
 
     <style>
@@ -28,65 +30,58 @@
         }
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-        /* Custom styles for canvas and UI elements */
+        /* Custom styles for the plot canvas */
         .plot-canvas {
-            border: 2px solid #d1d5db; /* gray-300 */
-            background-color: #f9fafb; /* gray-50 */
+            border: 2px solid #d1d5db;
             cursor: crosshair;
-            touch-action: none; /* Prevents scrolling on canvas touch */
+            background-color: #f9fafb;
+            touch-action: none; /* Prevent default touch actions like scrolling */
         }
-        .btn {
-            @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2;
-        }
-        .btn-primary {
-            @apply bg-teal-600 hover:bg-teal-700 focus:ring-teal-500;
-        }
-        .btn-secondary {
-            @apply bg-gray-600 hover:bg-gray-700 focus:ring-gray-500;
-        }
-        .btn-danger {
-            @apply bg-red-600 hover:bg-red-700 focus:ring-red-500;
-        }
-        .input-field {
-            @apply mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm;
-        }
-        .card {
-            @apply bg-white shadow-lg rounded-lg p-4 sm:p-6 mb-4 transition-transform hover:scale-105;
-        }
-        .modal-container {
-            @apply fixed inset-0 z-50 w-screen overflow-y-auto bg-gray-900 bg-opacity-75 transition-opacity;
-        }
-        .modal-panel {
-            @apply relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg;
-        }
+
+        /* Tailwind-like button styles */
+        .btn { @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2; }
+        .btn-primary { @apply bg-teal-600 hover:bg-teal-700 focus:ring-teal-500; }
+        .btn-secondary { @apply bg-gray-600 hover:bg-gray-700 focus:ring-gray-500; }
+        .btn-danger { @apply bg-red-600 hover:bg-red-700 focus:ring-red-500; }
+
+        /* Tailwind-like input field styles */
+        .input-field { @apply mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm; }
+
+        /* Tailwind-like card styles */
+        .card { @apply bg-white shadow-lg rounded-lg p-4 sm:p-6 mb-4; }
+
+        /* Modal specific styles */
+        .modal-container { @apply fixed inset-0 z-50 w-screen overflow-y-auto bg-gray-900 bg-opacity-75 transition-opacity; }
+        .modal-panel { @apply relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
     <div id="app" class="max-w-7xl mx-auto p-4">
-        <!-- The Vue Router will mount the active component here -->
+        <!-- Vue app will be mounted here -->
     </div>
 
     <script type="module">
-        const { createApp, ref, reactive, onMounted, computed, watch } = Vue;
+        // Destructure Vue and Vue Router modules
+        const { createApp, ref, reactive, onMounted, computed, watch, nextTick } = Vue;
         const { createRouter, createWebHashHistory, useRoute, useRouter } = VueRouter;
-        const { LucideVueNext } = window;
 
         // --- DATABASE SETUP (Dexie.js) ---
         const db = new Dexie('ForestInventoryDB');
         db.version(1).stores({
-            projects: '++id, name',
-            plots: '++id, projectId, plotNumber',
-            trees: '++id, plotId, treeNumber',
+            projects: '++id, name', // Primary key 'id', indexed 'name'
+            plots: '++id, projectId, plotNumber', // Primary key 'id', indexed 'projectId' and 'plotNumber'
+            trees: '++id, plotId, treeNumber', // Primary key 'id', indexed 'plotId' and 'treeNumber'
         });
 
-        // --- MOCK USER ---
+        // --- MOCK USER (for tracking updates) ---
         const currentUser = { username: 'field_user_01' };
 
         // --- COMPONENT: Alert Modal ---
+        // A simple modal for displaying alerts to the user.
         const AlertModal = {
-            props: ['title', 'message'],
-            emits: ['close'],
+            props: ['title', 'message'], // Props for title and message
+            emits: ['close'], // Emits a 'close' event when the modal is dismissed
             template: `
                 <div class="modal-container" @click.self="$emit('close')">
                     <div class="flex min-h-full items-center justify-center p-4 text-center">
@@ -105,9 +100,10 @@
         };
 
         // --- COMPONENT: Confirmation Modal ---
+        // A modal for getting user confirmation for critical actions.
         const ConfirmationModal = {
-            props: ['title', 'message'],
-            emits: ['confirm', 'cancel'],
+            props: ['title', 'message'], // Props for title and message
+            emits: ['confirm', 'cancel'], // Emits 'confirm' or 'cancel' based on user action
             template: `
                 <div class="modal-container" @click.self="$emit('cancel')">
                     <div class="flex min-h-full items-center justify-center p-4 text-center">
@@ -115,13 +111,12 @@
                             <div class="p-6">
                                 <div class="sm:flex sm:items-start">
                                     <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                        <component :is="icons.AlertTriangle" class="h-6 w-6 text-red-600" aria-hidden="true" />
+                                        <!-- PrimeIcon for alert/warning -->
+                                        <i class="pi pi-exclamation-triangle h-6 w-6 text-red-600" aria-hidden="true"></i>
                                     </div>
                                     <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                                         <h3 class="text-lg font-semibold leading-6 text-gray-900">{{ title }}</h3>
-                                        <div class="mt-2">
-                                            <p class="text-sm text-gray-500">{{ message }}</p>
-                                        </div>
+                                        <div class="mt-2"><p class="text-sm text-gray-500">{{ message }}</p></div>
                                     </div>
                                 </div>
                                 <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
@@ -134,44 +129,46 @@
                 </div>
             `,
             setup() {
-                const icons = { AlertTriangle: 'AlertTriangle' };
-                return { icons };
+                return {}; // No specific state or methods needed for this simple component
             }
         };
 
         // --- COMPONENT: Home / Project Summary ---
+        // Displays a list of projects, allows creating new projects, and importing/exporting.
         const Home = {
-            components: { AlertModal },
+            components: { AlertModal }, // Register AlertModal for use in this component
             template: `
                 <div class="space-y-6">
+                    <!-- Alert Modal display -->
                     <AlertModal v-if="alertInfo.show" :title="alertInfo.title" :message="alertInfo.message" @close="alertInfo.show = false" />
+
                     <header class="flex justify-between items-center">
                         <h1 class="text-3xl font-bold text-teal-800">Projects</h1>
                         <div class="flex items-center space-x-2">
                             <label for="import-json" class="btn btn-secondary cursor-pointer">
-                                <component :is="icons.Upload" class="h-5 w-5 mr-2"/> Import
+                                <i class="pi pi-upload h-5 w-5 mr-2"></i> Import
                             </label>
                             <input id="import-json" type="file" @change="importProject" class="hidden" accept=".json">
                         </div>
                     </header>
 
+                    <!-- Create New Project Section -->
                     <div class="bg-white p-4 rounded-lg shadow">
                         <h2 class="text-xl font-semibold mb-2">Create New Project</h2>
                         <form @submit.prevent="addProject" class="flex flex-col sm:flex-row gap-2">
                             <input v-model="newProjectName" type="text" placeholder="Enter project name" class="input-field flex-grow" required>
                             <button type="submit" class="btn btn-primary">
-                                <component :is="icons.Plus" class="h-5 w-5 mr-2"/> Create Project
+                                <i class="pi pi-plus h-5 w-5 mr-2"></i> Create Project
                             </button>
                         </form>
                     </div>
 
+                    <!-- Existing Projects List -->
                     <div>
                         <h2 class="text-xl font-semibold mb-2">Existing Projects</h2>
-                        <div v-if="projects.length === 0" class="text-center text-gray-500 py-8">
-                            No projects found. Create one to get started!
-                        </div>
+                        <div v-if="projects.length === 0" class="text-center text-gray-500 py-8">No projects found. Create one to get started!</div>
                         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div v-for="project in projects" :key="project.id" class="card">
+                            <div v-for="project in projects" :key="project.id" class="card transition-transform hover:scale-105">
                                 <div class="flex-grow">
                                     <h3 class="text-lg font-bold text-teal-700">{{ project.name }}</h3>
                                     <p class="text-sm text-gray-500">Created: {{ new Date(project.createdAt).toLocaleString() }}</p>
@@ -179,10 +176,10 @@
                                 </div>
                                 <div class="mt-4 flex flex-wrap gap-2">
                                     <router-link :to="'/project/' + project.id + '/plots'" class="btn btn-primary text-sm flex-grow">
-                                        <component :is="icons.Eye" class="h-4 w-4 mr-2"/> View Plots
+                                        <i class="pi pi-eye h-4 w-4 mr-2"></i> View Plots
                                     </router-link>
                                     <button @click="exportProject(project.id)" class="btn btn-secondary text-sm flex-grow">
-                                        <component :is="icons.Download" class="h-4 w-4 mr-2"/> Export
+                                        <i class="pi pi-download h-4 w-4 mr-2"></i> Export
                                     </button>
                                 </div>
                             </div>
@@ -191,17 +188,18 @@
                 </div>
             `,
             setup() {
-                const projects = ref([]);
-                const newProjectName = ref('');
-                const icons = { Plus: 'Plus', Upload: 'Upload', Download: 'Download', Eye: 'Eye' };
-                const alertInfo = reactive({ show: false, title: '', message: '' });
+                const projects = ref([]); // Reactive reference for storing projects
+                const newProjectName = ref(''); // Reactive reference for new project input
+                const alertInfo = reactive({ show: false, title: '', message: '' }); // Reactive object for alert modal state
 
+                // Function to show the alert modal
                 function showAlert(title, message) {
                     alertInfo.title = title;
                     alertInfo.message = message;
                     alertInfo.show = true;
                 }
 
+                // Function to load projects from IndexedDB and count associated plots
                 async function loadProjects() {
                     const allProjects = await db.projects.toArray();
                     for (const proj of allProjects) {
@@ -210,126 +208,146 @@
                     projects.value = allProjects;
                 }
 
+                // Load projects when the component is mounted
                 onMounted(loadProjects);
 
+                // Function to add a new project to IndexedDB
                 async function addProject() {
-                    if (!newProjectName.value.trim()) return;
+                    if (!newProjectName.value.trim()) return; // Prevent adding empty project names
                     await db.projects.add({
                         name: newProjectName.value,
                         createdAt: new Date().toISOString(),
                         lastUpdated: new Date().toISOString(),
-                        updatedBy: currentUser.username,
+                        updatedBy: currentUser.username
                     });
-                    newProjectName.value = '';
-                    await loadProjects();
+                    newProjectName.value = ''; // Clear input field
+                    await loadProjects(); // Reload projects to update the list
                 }
 
+                // Function to export a project and its associated data as a JSON file
                 async function exportProject(projectId) {
                     const project = await db.projects.get(projectId);
                     const plots = await db.plots.where('projectId').equals(projectId).toArray();
-                    const trees = await db.trees.where('plotId').anyOf(plots.map(p => p.id)).toArray();
+                    const trees = await db.trees.where('plotId').anyOf(plots.map(p => p.id)).toArray(); // Get trees for all plots in the project
 
                     const exportData = { project, plots, trees };
                     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `${project.name.replace(/\s+/g, '_')}_export.json`;
+                    a.download = `${project.name.replace(/\s+/g, '_')}_export.json`; // Create a downloadable file name
                     a.click();
-                    URL.revokeObjectURL(url);
+                    URL.revokeObjectURL(url); // Clean up the URL object
                 }
 
+                // Function to import a project from a JSON file
                 function importProject(event) {
                     const file = event.target.files[0];
                     if (!file) return;
+
                     const reader = new FileReader();
                     reader.onload = async (e) => {
                         try {
                             const data = JSON.parse(e.target.result);
+                            // Basic validation of the imported data structure
                             if (!data.project || !data.plots || !data.trees) {
                                 showAlert('Import Error', 'Invalid project file format.');
                                 return;
                             }
 
+                            // Use Dexie's transaction for atomic operations
                             await db.transaction('rw', db.projects, db.plots, db.trees, async () => {
-                                delete data.project.id;
+                                // Add new project, then link plots and trees to the new project ID
+                                delete data.project.id; // Dexie will auto-generate a new ID
                                 const newProjectId = await db.projects.add(data.project);
 
-                                for(const plot of data.plots) {
+                                for (const plot of data.plots) {
                                     const oldPlotId = plot.id;
-                                    delete plot.id;
-                                    plot.projectId = newProjectId;
+                                    delete plot.id; // Dexie will auto-generate a new ID
+                                    plot.projectId = newProjectId; // Link to the new project
                                     const newPlotId = await db.plots.add(plot);
 
                                     const relatedTrees = data.trees.filter(t => t.plotId === oldPlotId);
-                                    for(const tree of relatedTrees) {
-                                        delete tree.id;
-                                        tree.plotId = newPlotId;
+                                    for (const tree of relatedTrees) {
+                                        delete tree.id; // Dexie will auto-generate a new ID
+                                        tree.plotId = newPlotId; // Link to the new plot
                                     }
-                                    if(relatedTrees.length > 0) {
-                                        await db.trees.bulkAdd(relatedTrees);
+                                    if (relatedTrees.length > 0) {
+                                        await db.trees.bulkAdd(relatedTrees); // Add trees in bulk for performance
                                     }
                                 }
                             });
                             showAlert('Success', 'Project imported successfully!');
-                            await loadProjects();
+                            await loadProjects(); // Reload projects after successful import
                         } catch (error) {
                             console.error('Import failed:', error);
                             showAlert('Import Failed', 'Could not import project. Check console for details.');
                         }
                     };
-                    reader.readAsText(file);
-                    event.target.value = '';
+                    reader.readAsText(file); // Read the file as text
+                    event.target.value = ''; // Clear the file input
                 }
 
-                return { projects, newProjectName, addProject, exportProject, importProject, icons, alertInfo };
+                return { projects, newProjectName, addProject, exportProject, importProject, alertInfo };
             }
         };
 
         // --- COMPONENT: PlotList ---
+        // Displays a list of plots for a specific project, allows adding/deleting plots, and updating plot details.
         const PlotList = {
-            components: { ConfirmationModal },
+            components: { ConfirmationModal }, // Register ConfirmationModal
             template: `
                 <div>
-                    <ConfirmationModal v-if="confirmInfo.show"
-                        title="Delete Plot"
-                        message="Are you sure you want to delete this plot and all its associated trees? This action cannot be undone."
-                        @confirm="handleDeleteConfirm"
-                        @cancel="confirmInfo.show = false"
-                    />
+                    <!-- Confirmation Modal display -->
+                    <ConfirmationModal v-if="confirmInfo.show" title="Delete Plot" message="Are you sure you want to delete this plot and all its associated trees? This action cannot be undone." @confirm="handleDeleteConfirm" @cancel="confirmInfo.show = false"/>
+
                     <header class="mb-4">
                         <router-link to="/" class="text-teal-600 hover:underline flex items-center">
-                           <component :is="icons.ArrowLeft" class="h-4 w-4 mr-1"/> Back to Projects
+                            <i class="pi pi-arrow-left h-4 w-4 mr-1"></i> Back to Projects
                         </router-link>
                         <h1 class="text-3xl font-bold text-teal-800 mt-2">{{ project.name }}</h1>
                     </header>
 
-                     <div class="bg-white p-4 rounded-lg shadow mb-6">
+                    <!-- Add New Plot Section -->
+                    <div class="bg-white p-4 rounded-lg shadow mb-6">
                         <h2 class="text-xl font-semibold mb-2">Add New Plot</h2>
                         <form @submit.prevent="addPlot" class="flex flex-col sm:flex-row gap-2">
-                            <input v-model.number="newPlotNumber" type="number" placeholder="Enter plot number" class="input-field flex-grow" required>
+                            <input v-model.number="newPlotNumber" type="number" min="0" placeholder="Enter plot number" class="input-field flex-grow" required>
                             <button type="submit" class="btn btn-primary">
-                                <component :is="icons.Plus" class="h-5 w-5 mr-2"/> Add Plot
+                                <i class="pi pi-plus h-5 w-5 mr-2"></i> Add Plot
                             </button>
                         </form>
                     </div>
 
+                    <!-- Survey Plots List -->
                     <div>
                         <h2 class="text-xl font-semibold mb-2">Survey Plots</h2>
-                         <div v-if="plots.length === 0" class="text-center text-gray-500 py-8">
-                            No plots found for this project. Add one to begin.
-                        </div>
-                        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div v-if="plots.length === 0" class="text-center text-gray-500 py-8">No plots found for this project. Add one to begin.</div>
+                        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div v-for="plot in plots" :key="plot.id" class="card">
                                 <h3 class="text-lg font-bold text-teal-700">Plot #{{ plot.plotNumber }}</h3>
-                                <p class="text-sm text-gray-500">Trees Recorded: {{ plot.treeCount || 0 }}</p>
+                                <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-500">Slope (%)</label>
+                                        <input v-model.number="plot.slope" min="0" @change="updatePlot(plot)" type="number" class="input-field text-sm p-1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-500">Aspect (°)</label>
+                                        <input v-model.number="plot.aspect" min="0" max="360" @change="updatePlot(plot)" type="number" class="input-field text-sm p-1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-500">Elevation (m)</label>
+                                        <input v-model.number="plot.elevation" @change="updatePlot(plot)" type="number" class="input-field text-sm p-1">
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-2">Trees Recorded: {{ plot.treeCount || 0 }}</p>
                                 <p class="text-sm text-gray-500">Last Updated: {{ new Date(plot.lastUpdated).toLocaleString() }}</p>
                                 <div class="mt-4 flex gap-2">
                                     <router-link :to="'/plot/' + plot.id" class="btn btn-primary text-sm flex-grow">
-                                        <component :is="icons.ClipboardList" class="h-4 w-4 mr-2"/> Enter Data
+                                        <i class="pi pi-list h-4 w-4 mr-2"></i> Enter Tree Data
                                     </router-link>
                                     <button @click="deletePlot(plot.id)" class="btn btn-danger text-sm">
-                                        <component :is="icons.Trash2" class="h-4 w-4"/>
+                                        <i class="pi pi-trash h-4 w-4"></i>
                                     </button>
                                 </div>
                             </div>
@@ -338,369 +356,480 @@
                 </div>
             `,
             setup() {
-                const route = useRoute();
-                const router = useRouter();
-                const projectId = Number(route.params.projectId);
-                const project = ref({});
-                const plots = ref([]);
-                const newPlotNumber = ref(null);
-                const icons = { Plus: 'Plus', ArrowLeft: 'ArrowLeft', ClipboardList: 'ClipboardList', Trash2: 'Trash2' };
-                const confirmInfo = reactive({ show: false, plotId: null });
+                const route = useRoute(); // Access current route information
+                const router = useRouter(); // Access router instance
+                const projectId = Number(route.params.projectId); // Get projectId from route params
+                const project = ref({}); // Reactive reference for the current project
+                const plots = ref([]); // Reactive reference for plots in the project
+                const newPlotNumber = ref(null); // Reactive reference for new plot number input
+                const confirmInfo = reactive({ show: false, plotId: null }); // Reactive object for confirmation modal state
 
+                // Function to load project and its plots from IndexedDB
                 async function loadData() {
                     const proj = await db.projects.get(projectId);
                     if (!proj) {
-                        router.push('/');
+                        router.push('/'); // Redirect to home if project not found
                         return;
                     }
                     project.value = proj;
-
                     const allPlots = await db.plots.where('projectId').equals(projectId).sortBy('plotNumber');
+                    // Count trees for each plot
                     for (const plot of allPlots) {
                         plot.treeCount = await db.trees.where('plotId').equals(plot.id).count();
                     }
                     plots.value = allPlots;
                 }
 
+                // Load data when the component is mounted
                 onMounted(loadData);
 
+                // Function to add a new plot to IndexedDB
                 async function addPlot() {
-                    if (newPlotNumber.value === null) return;
+                    if (newPlotNumber.value === null) return; // Prevent adding empty plot number
                     await db.plots.add({
                         projectId: projectId,
                         plotNumber: newPlotNumber.value,
-                        slope: 0, aspect: 0, elevation: 0,
+                        slope: 0,
+                        aspect: 0,
+                        elevation: 0,
                         createdAt: new Date().toISOString(),
                         lastUpdated: new Date().toISOString(),
                         updatedBy: currentUser.username,
                     });
-                    newPlotNumber.value = null;
-                    await loadData();
+                    newPlotNumber.value = null; // Clear input field
+                    await loadData(); // Reload data to update the list
                 }
 
+                // Function to initiate plot deletion confirmation
                 function deletePlot(plotId) {
                     confirmInfo.plotId = plotId;
                     confirmInfo.show = true;
                 }
 
+                // Function to handle plot deletion after confirmation
                 async function handleDeleteConfirm() {
                     await db.transaction('rw', db.plots, db.trees, async () => {
-                        await db.trees.where('plotId').equals(confirmInfo.plotId).delete();
-                        await db.plots.delete(confirmInfo.plotId);
+                        await db.trees.where('plotId').equals(confirmInfo.plotId).delete(); // Delete associated trees
+                        await db.plots.delete(confirmInfo.plotId); // Delete the plot
                     });
-                    confirmInfo.show = false;
-                    confirmInfo.plotId = null;
-                    await loadData();
+                    confirmInfo.show = false; // Hide confirmation modal
+                    confirmInfo.plotId = null; // Clear plotId
+                    await loadData(); // Reload data to update the list
                 }
 
-                return { project, plots, newPlotNumber, addPlot, deletePlot, icons, confirmInfo, handleDeleteConfirm };
+                // Function to update plot details in IndexedDB
+                async function updatePlot(plot) {
+                    const { id, slope, aspect, elevation } = plot;
+                    await db.plots.update(id, {
+                        slope,
+                        aspect,
+                        elevation,
+                        lastUpdated: new Date().toISOString(),
+                        updatedBy: currentUser.username
+                    });
+                    await loadData(); // Reload to refresh timestamp and tree counts
+                }
+
+                return { project, plots, newPlotNumber, addPlot, deletePlot, confirmInfo, handleDeleteConfirm, updatePlot };
             }
         };
 
-        // --- COMPONENT: Tree Form Modal ---
-        const TreeForm = {
-            props: ['tree', 'plotId', 'nextTreeNumber'],
-            emits: ['close', 'save'],
+        // --- COMPONENT: Tree Edit Form (Embedded) ---
+        // A form for editing individual tree details. Used within PlotObservation.
+        const TreeEditForm = {
+            props: ['tree'], // Prop for the tree object to be edited
+            emits: ['save', 'cancel'], // Emits 'save' with updated tree data or 'cancel'
             template: `
-                <div class="modal-container" @click.self="$emit('close')">
-                    <div class="flex min-h-full items-center justify-center p-4 text-center">
-                        <div class="modal-panel w-full max-w-md">
-                            <form @submit.prevent="saveTree" class="p-6 space-y-4">
-                                <h3 class="text-xl font-bold text-teal-800">Tree #{{ localTree.treeNumber }} Details</h3>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Species</label>
-                                        <input v-model="localTree.species" type="text" placeholder="e.g., PSME" class="input-field" required>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Status</label>
-                                        <select v-model="localTree.status" class="input-field">
-                                            <option>Live</option>
-                                            <option>Dead</option>
-                                            <option>Cut</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Diameter (cm)</label>
-                                        <input v-model.number="localTree.diameter" type="number" step="0.1" placeholder="e.g., 45.2" class="input-field" required>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Height (m)</label>
-                                        <input v-model.number="localTree.height" type="number" step="0.1" placeholder="e.g., 30.5" class="input-field">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Notes</label>
-                                    <textarea v-model="localTree.notes" placeholder="Any additional notes..." class="input-field" rows="3"></textarea>
-                                </div>
-                                <div class="pt-4 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3">
-                                    <button type="button" @click="$emit('close')" class="btn btn-secondary mt-2 sm:mt-0">Cancel</button>
-                                    <button type="submit" class="btn btn-primary">Save Tree</button>
-                                </div>
-                            </form>
+                <div class="bg-teal-50 p-4 rounded-b-md -mt-2">
+                    <h4 class="font-semibold text-teal-800 mb-2">Editing Tree #{{ localTree.treeNumber }}</h4>
+                    <form @submit.prevent="saveTree" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-medium text-gray-700">Species</label><input v-model="localTree.species" type="text" placeholder="e.g., PSME" class="input-field" required></div>
+                            <div><label class="block text-sm font-medium text-gray-700">Status</label><select v-model="localTree.status" class="input-field"><option>Live</option><option>Dead</option><option>Cut</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700">Diameter (cm)</label><input v-model.number="localTree.diameter" type="number" step="0.1" placeholder="e.g., 45.2" class="input-field" required></div>
+                            <div><label class="block text-sm font-medium text-gray-700">Height (m)</label><input v-model.number="localTree.height" type="number" step="0.1" placeholder="e.g., 30.5" class="input-field"></div>
+                            <div><label class="block text-sm font-medium text-gray-700">Azimuth (°)</label><input v-model.number="localTree.azimuth" type="number" step="0.1" class="input-field"></div>
+                            <div><label class="block text-sm font-medium text-gray-700">Distance (m)</label><input v-model.number="localTree.distance" type="number" step="0.1" class="input-field"></div>
                         </div>
-                    </div>
+                        <div><label class="block text-sm font-medium text-gray-700">Notes</label><textarea v-model="localTree.notes" placeholder="Any additional notes..." class="input-field" rows="2"></textarea></div>
+                        <div class="pt-2 flex justify-end space-x-3">
+                            <button type="button" @click="$emit('cancel')" class="btn btn-secondary">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
                 </div>
             `,
             setup(props, { emit }) {
+                // Use a local copy of the prop to avoid mutating it directly.
                 const localTree = reactive({ ...props.tree });
-                if (!localTree.id) {
-                    localTree.treeNumber = props.nextTreeNumber;
-                    localTree.species = '';
-                    localTree.status = 'Live';
-                    localTree.diameter = null;
-                    localTree.height = null;
-                    localTree.notes = '';
-                    localTree.plotId = props.plotId;
+
+                // Function to emit the 'save' event with the updated tree data
+                function saveTree() {
+                    emit('save', { ...localTree });
                 }
-                function saveTree() { emit('save', { ...localTree }); }
+
+                // Watch for the prop changing from the parent to update the local copy
+                watch(() => props.tree, (newTree) => {
+                    Object.assign(localTree, newTree);
+                });
+
                 return { localTree, saveTree };
             }
         };
 
         // --- COMPONENT: Plot Observation ---
+        // Displays details for a single plot, including a tree map and a list of recorded trees.
+        // Allows adding trees visually or by azimuth/distance, and editing/deleting trees.
         const PlotObservation = {
-            components: { TreeForm, ConfirmationModal },
+            components: { TreeEditForm, ConfirmationModal }, // Register TreeEditForm and ConfirmationModal
             template: `
                 <div v-if="plot.id">
-                    <ConfirmationModal v-if="confirmInfo.show"
-                        title="Delete Tree"
-                        message="Are you sure you want to delete this tree? This action cannot be undone."
-                        @confirm="handleDeleteConfirm"
-                        @cancel="confirmInfo.show = false"
-                    />
+                    <!-- Confirmation Modal display -->
+                    <ConfirmationModal v-if="confirmInfo.show" title="Delete Tree" message="Are you sure you want to delete this tree? This action cannot be undone." @confirm="handleDeleteConfirm" @cancel="confirmInfo.show = false"/>
+
                     <header class="mb-4">
                         <router-link :to="'/project/' + plot.projectId + '/plots'" class="text-teal-600 hover:underline flex items-center">
-                            <component :is="icons.ArrowLeft" class="h-4 w-4 mr-1"/> Back to Plot List
+                            <i class="pi pi-arrow-left h-4 w-4 mr-1"></i> Back to Plot List
                         </router-link>
                         <h1 class="text-3xl font-bold text-teal-800 mt-2">Plot #{{ plot.plotNumber }}</h1>
                     </header>
 
-                    <div class="bg-white p-4 rounded-lg shadow mb-6">
-                        <h2 class="text-xl font-semibold mb-2">Plot Details</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div><label class="block text-sm font-medium text-gray-700">Slope (%)</label><input v-model.number="plot.slope" @change="savePlotDetails" type="number" class="input-field"></div>
-                            <div><label class="block text-sm font-medium text-gray-700">Aspect (°)</label><input v-model.number="plot.aspect" @change="savePlotDetails" type="number" class="input-field"></div>
-                            <div><label class="block text-sm font-medium text-gray-700">Elevation (m)</label><input v-model.number="plot.elevation" @change="savePlotDetails" type="number" class="input-field"></div>
-                        </div>
+                    <!-- Tabs for Tree Map and Recorded Trees -->
+                    <div class="mb-4 border-b border-gray-200">
+                        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                            <button @click="activeTab = 'map'" :class="[activeTab === 'map' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">Tree Map</button>
+                            <button @click="activeTab = 'list'" :class="[activeTab === 'list' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">Recorded Trees ({{ trees.length }})</button>
+                        </nav>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-2 bg-white p-4 rounded-lg shadow">
-                            <h2 class="text-xl font-semibold mb-2">Tree Map</h2>
-                            <p class="text-sm text-gray-500 mb-2">Tap on the canvas to add a tree, or tap an existing tree to edit.</p>
-                            <canvas ref="plotCanvas" class="plot-canvas w-full rounded-md" @click="handleCanvasClick"></canvas>
-                            <div class="mt-4 p-4 border border-gray-200 rounded-md">
-                                <h3 class="font-semibold mb-2">Add Tree by Distance & Azimuth</h3>
-                                <form @submit.prevent="addTreeByAzimuth" class="flex flex-col sm:flex-row gap-2 items-end">
-                                    <div class="flex-grow"><label class="block text-sm font-medium text-gray-700">Distance (m)</label><input v-model.number="azimuthForm.distance" type="number" step="0.1" class="input-field" required></div>
-                                    <div class="flex-grow"><label class="block text-sm font-medium text-gray-700">Azimuth (°)</label><input v-model.number="azimuthForm.azimuth" type="number" step="0.1" class="input-field" required></div>
-                                    <button type="submit" class="btn btn-secondary w-full sm:w-auto"><component :is="icons.Plus" class="h-5 w-5 mr-2"/> Add</button>
-                                </form>
-                            </div>
+                    <!-- Tree Map Tab Content -->
+                    <div v-show="activeTab === 'map'" class="bg-white p-4 rounded-lg shadow">
+                        <h2 class="text-xl font-semibold mb-2">Tree Entry</h2>
+                        <div class="mb-4 p-4 border border-gray-200 rounded-md">
+                            <h3 class="font-semibold mb-2">Add Tree by Distance & Azimuth</h3>
+                            <form @submit.prevent="addTreeByAzimuth" class="flex flex-col sm:flex-row gap-2 items-end">
+                                <div class="flex-grow"><label class="block text-sm font-medium text-gray-700">Azimuth (°)</label><input v-model.number="azimuthForm.azimuth" type="number" step="0.1" class="input-field" required></div>
+                                <div class="flex-grow"><label class="block text-sm font-medium text-gray-700">Distance (m)</label><input v-model.number="azimuthForm.distance" type="number" step="0.1" class="input-field" required></div>
+                                <button type="submit" class="btn btn-secondary w-full sm:w-auto">
+                                    <i class="pi pi-plus h-5 w-5 mr-2"></i> Add
+                                </button>
+                            </form>
                         </div>
+                        <p class="text-sm text-gray-500 mb-2">Or, tap on the canvas below to add a tree visually. A new tree will be created and can be edited in the 'Recorded Trees' tab.</p>
+                        <canvas ref="plotCanvas" class="plot-canvas w-full rounded-md" @click="handleCanvasClick"></canvas>
+                    </div>
 
-                        <div class="bg-white p-4 rounded-lg shadow">
-                            <h2 class="text-xl font-semibold mb-2">Recorded Trees ({{ trees.length }})</h2>
-                            <ul class="space-y-2 max-h-96 overflow-y-auto">
-                                <li v-for="tree in sortedTrees" :key="tree.id" @click="selectTree(tree)" class="p-3 rounded-md cursor-pointer flex justify-between items-center" :class="selectedTree?.id === tree.id ? 'bg-teal-100 ring-2 ring-teal-500' : 'bg-gray-50 hover:bg-gray-100'">
+                    <!-- Recorded Trees Tab Content -->
+                    <div v-if="activeTab === 'list'" class="bg-white p-4 rounded-lg shadow">
+                        <h2 class="text-xl font-semibold mb-2">Recorded Trees</h2>
+                        <ul class="space-y-2 max-h-[60vh] overflow-y-auto">
+                            <li v-if="trees.length === 0" class="text-center text-gray-500 py-8">No trees recorded for this plot yet.</li>
+                            <li v-for="tree in sortedTrees" :key="tree.id" class="bg-gray-50 rounded-lg shadow-sm">
+                                <div @click="selectTreeForEditing(tree)" class="p-3 cursor-pointer flex justify-between items-center" :class="editingTreeId === tree.id ? 'bg-teal-100 rounded-t-lg' : 'hover:bg-gray-100 rounded-lg'">
                                     <div><p class="font-bold">Tree #{{ tree.treeNumber }}</p><p class="text-sm text-gray-600">{{ tree.species || 'No species' }} - {{ tree.diameter || 'N/A' }}cm</p></div>
-                                    <button @click.stop="deleteTree(tree.id)" class="text-red-500 hover:text-red-700 p-1 rounded-full"><component :is="icons.Trash2" class="h-4 w-4"/></button>
-                                </li>
-                            </ul>
-                        </div>
+                                    <div class="flex items-center space-x-2">
+                                        <button @click.stop="deleteTree(tree.id)" class="text-red-500 hover:text-red-700 p-1 rounded-full">
+                                            <i class="pi pi-trash h-4 w-4"></i>
+                                        </button>
+                                        <i :class="editingTreeId === tree.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" class="h-5 w-5 text-gray-500"></i>
+                                    </div>
+                                </div>
+                                <TreeEditForm v-if="editingTreeId === tree.id" :tree="tree" @save="handleSaveTree" @cancel="editingTreeId = null"/>
+                            </li>
+                        </ul>
                     </div>
-
-                    <TreeForm v-if="isTreeFormOpen" :tree="selectedTree" :plotId="plot.id" :nextTreeNumber="nextTreeNumber" @close="isTreeFormOpen = false" @save="handleSaveTree"/>
                 </div>
                 <div v-else class="text-center text-gray-500 py-8">Loading plot data...</div>
             `,
             setup() {
-                const route = useRoute();
-                const plotId = Number(route.params.plotId);
-                const plot = ref({});
-                const trees = ref([]);
-                const plotCanvas = ref(null);
-                const selectedTree = ref(null);
-                const isTreeFormOpen = ref(false);
-                const icons = { ArrowLeft: 'ArrowLeft', Plus: 'Plus', Trash2: 'Trash2' };
-                const azimuthForm = reactive({ distance: null, azimuth: null });
-                const confirmInfo = reactive({ show: false, treeId: null });
+                const route = useRoute(); // Access current route information
+                const plotId = Number(route.params.plotId); // Get plotId from route params
+                const plot = ref({}); // Reactive reference for the current plot
+                const trees = ref([]); // Reactive reference for trees in the plot
+                const plotCanvas = ref(null); // Reactive reference for the canvas element
+                const editingTreeId = ref(null); // Reactive reference to track which tree is being edited
+                const azimuthForm = reactive({ distance: null, azimuth: null }); // Reactive object for azimuth/distance input form
+                const confirmInfo = reactive({ show: false, treeId: null }); // Reactive object for confirmation modal state
+                const activeTab = ref('map'); // Reactive reference for the active tab ('map' or 'list')
 
-                const CANVAS_SIZE = 500, PLOT_CENTER_RADIUS = 8, TREE_RADIUS = 5, METERS_TO_PIXELS_SCALE = 10;
+                // Constants for canvas drawing
+                const CANVAS_SIZE = 500;
+                const PLOT_CENTER_RADIUS = 8;
+                const TREE_RADIUS = 5;
+                const METERS_TO_PIXELS_SCALE = 10; // 1 meter = 10 pixels on canvas
 
+                // Computed property to determine the next available tree number
                 const nextTreeNumber = computed(() => trees.value.length === 0 ? 1 : Math.max(...trees.value.map(t => t.treeNumber)) + 1);
+                // Computed property for sorted trees (by treeNumber)
                 const sortedTrees = computed(() => [...trees.value].sort((a, b) => a.treeNumber - b.treeNumber));
 
+                // Function to load plot and tree data from IndexedDB
                 async function loadData() {
                     plot.value = await db.plots.get(plotId) || {};
                     trees.value = await db.trees.where('plotId').equals(plotId).toArray();
-                    drawCanvas();
+                    // If on the map tab, ensure canvas is drawn after data loads
+                    if (activeTab.value === 'map') {
+                        await nextTick(); // Wait for DOM update
+                        drawCanvas();
+                    }
                 }
 
+                // Set canvas dimensions and load data when component is mounted
                 onMounted(() => {
                     if (plotCanvas.value) {
-                       plotCanvas.value.width = CANVAS_SIZE;
-                       plotCanvas.value.height = CANVAS_SIZE;
+                        plotCanvas.value.width = CANVAS_SIZE;
+                        plotCanvas.value.height = CANVAS_SIZE;
                     }
                     loadData();
                 });
 
+                // Function to draw the plot and trees on the canvas
                 function drawCanvas() {
                     const canvas = plotCanvas.value;
                     if (!canvas) return;
                     const ctx = canvas.getContext('2d');
-                    const centerX = canvas.width / 2, centerY = canvas.height / 2;
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    const centerX = canvas.width / 2;
+                    const centerY = canvas.height / 2;
+
+                    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+
+                    // Draw plot center
                     ctx.beginPath();
                     ctx.arc(centerX, centerY, PLOT_CENTER_RADIUS, 0, 2 * Math.PI);
-                    ctx.fillStyle = 'rgba(20, 83, 45, 0.8)'; ctx.fill();
-                    ctx.lineWidth = 2; ctx.strokeStyle = '#14532d'; ctx.stroke();
+                    ctx.fillStyle = 'rgba(20, 83, 45, 0.8)'; // Dark green
+                    ctx.fill();
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = '#14532d'; // Darker green border
+                    ctx.stroke();
+
+                    // Draw each tree
                     trees.value.forEach(tree => {
                         ctx.beginPath();
                         ctx.arc(tree.x, tree.y, TREE_RADIUS, 0, 2 * Math.PI);
-                        if (selectedTree.value && selectedTree.value.id === tree.id) {
-                            ctx.fillStyle = '#ccfbf1'; ctx.fill();
-                            ctx.lineWidth = 2; ctx.strokeStyle = '#0d9488';
+                        if (editingTreeId.value === tree.id) {
+                            ctx.fillStyle = '#ccfbf1'; // Light teal for editing tree
+                            ctx.lineWidth = 2;
+                            ctx.strokeStyle = '#0d9488'; // Dark teal border
                         } else {
-                            ctx.fillStyle = '#f97316'; ctx.fill();
-                            ctx.lineWidth = 1; ctx.strokeStyle = '#ea580c';
+                            ctx.fillStyle = '#f97316'; // Orange for other trees
+                            ctx.lineWidth = 1;
+                            ctx.strokeStyle = '#ea580c'; // Darker orange border
                         }
+                        ctx.fill();
                         ctx.stroke();
                     });
                 }
 
-                watch([trees, selectedTree], drawCanvas, { deep: true });
+                // Watch for changes in trees or editingTreeId to redraw the canvas
+                watch([trees, editingTreeId], () => {
+                    if (activeTab.value === 'map') drawCanvas();
+                }, { deep: true }); // Deep watch for changes within tree objects
 
-                async function savePlotDetails() {
-                    await db.plots.update(plotId, {
-                        slope: plot.value.slope, aspect: plot.value.aspect, elevation: plot.value.elevation,
-                        lastUpdated: new Date().toISOString(), updatedBy: currentUser.username,
-                    });
+                // Watch for tab changes to ensure canvas is redrawn when switching to 'map'
+                watch(activeTab, (newTab) => {
+                    if (newTab === 'map') {
+                        nextTick(() => {
+                            if (plotCanvas.value) {
+                                plotCanvas.value.width = CANVAS_SIZE;
+                                plotCanvas.value.height = CANVAS_SIZE;
+                                drawCanvas();
+                            }
+                        });
+                    }
+                });
+
+                // Function to create a new tree record
+                async function createNewTree(x, y, azimuth = null, distance = null) {
+                    const newTree = {
+                        plotId: plotId,
+                        treeNumber: nextTreeNumber.value,
+                        species: '',
+                        status: 'Live',
+                        diameter: null,
+                        height: null,
+                        notes: '',
+                        x, y, // Canvas coordinates
+                        azimuth, distance, // Azimuth and distance from plot center
+                        createdAt: new Date().toISOString(),
+                        lastUpdated: new Date().toISOString(),
+                        updatedBy: currentUser.username,
+                    };
+                    const id = await db.trees.add(newTree); // Add to IndexedDB
+                    await loadData(); // Reload data to update tree list and canvas
+                    activeTab.value = 'list'; // Switch to list view to allow immediate editing
+                    await nextTick(); // Wait for DOM update
+                    editingTreeId.value = id; // Open the newly created tree for editing
                 }
 
-                function getTreeAt(x, y) {
-                    return trees.value.find(tree => Math.sqrt(Math.pow(tree.x - x, 2) + Math.pow(tree.y - y, 2)) < TREE_RADIUS * 2);
-                }
-
+                // Handle click events on the canvas
                 function handleCanvasClick(event) {
                     const rect = plotCanvas.value.getBoundingClientRect();
+                    // Calculate click coordinates relative to canvas
                     const scaleX = plotCanvas.value.width / rect.width;
                     const scaleY = plotCanvas.value.height / rect.height;
                     const x = (event.clientX - rect.left) * scaleX;
                     const y = (event.clientY - rect.top) * scaleY;
-                    const clickedTree = getTreeAt(x, y);
-                    selectTree(clickedTree || { x, y }, !clickedTree);
-                }
 
-                function selectTree(tree, isNew = false) {
-                    selectedTree.value = tree;
-                    isTreeFormOpen.value = true;
-                }
+                    // Check if an existing tree was clicked
+                    const clickedTree = trees.value.find(tree => Math.sqrt(Math.pow(tree.x - x, 2) + Math.pow(tree.y - y, 2)) < TREE_RADIUS * 2);
 
-                async function handleSaveTree(treeData) {
-                    const dataToSave = { ...treeData, lastUpdated: new Date().toISOString(), updatedBy: currentUser.username };
-                    if (dataToSave.id) {
-                        await db.trees.update(dataToSave.id, dataToSave);
+                    if (clickedTree) {
+                        activeTab.value = 'list'; // Switch to list view
+                        editingTreeId.value = clickedTree.id; // Open the clicked tree for editing
                     } else {
-                        dataToSave.createdAt = new Date().toISOString();
-                        await db.trees.add(dataToSave);
+                        // If no tree clicked, create a new one at the clicked location
+                        const centerX = plotCanvas.value.width / 2;
+                        const centerY = plotCanvas.value.height / 2;
+                        const dx = x - centerX;
+                        const dy = centerY - y; // y-axis is inverted in canvas (positive downwards)
+
+                        // Calculate distance from plot center
+                        const distance = Math.round((Math.sqrt(dx * dx + dy * dy) / METERS_TO_PIXELS_SCALE) * 10) / 10; // Convert pixels to meters
+
+                        // Calculate azimuth (angle from north, clockwise)
+                        // atan2(y, x) returns angle in radians from -PI to PI.
+                        // Convert to degrees, adjust for North (0 degrees at top, increasing clockwise), and normalize to 0-360.
+                        let azimuth = (450 - (Math.atan2(dy, dx) * 180 / Math.PI)) % 360;
+                        azimuth = Math.round(azimuth * 10) / 10;
+
+                        createNewTree(x, y, azimuth, distance);
                     }
-                    isTreeFormOpen.value = false;
-                    selectedTree.value = null;
-                    await loadData();
                 }
 
+                // Function to toggle tree editing mode
+                function selectTreeForEditing(tree) {
+                    editingTreeId.value = editingTreeId.value === tree.id ? null : tree.id;
+                }
+
+                // Handle saving updated tree data from TreeEditForm
+                async function handleSaveTree(treeData) {
+                    // If azimuth/distance are provided, recalculate x/y coordinates for canvas
+                    let { azimuth, distance } = treeData;
+                    if (typeof azimuth === 'number' && typeof distance === 'number') {
+                        const centerX = CANVAS_SIZE / 2;
+                        const centerY = CANVAS_SIZE / 2;
+                        const angleRad = ((450 - azimuth) % 360) * Math.PI / 180; // Convert azimuth to radians (adjusted for canvas Y-axis)
+                        const scaledDistance = distance * METERS_TO_PIXELS_SCALE; // Convert meters to pixels
+                        treeData.x = centerX + scaledDistance * Math.cos(angleRad);
+                        treeData.y = centerY - scaledDistance * Math.sin(angleRad);
+                    }
+                    // Prepare data for saving, including update timestamp and user
+                    const dataToSave = { ...treeData, lastUpdated: new Date().toISOString(), updatedBy: currentUser.username };
+                    await db.trees.update(treeData.id, dataToSave); // Update in IndexedDB
+                    editingTreeId.value = null; // Close editing form
+                    await loadData(); // Reload data to update list and canvas
+                }
+
+                // Function to initiate tree deletion confirmation
                 function deleteTree(treeId) {
                     confirmInfo.treeId = treeId;
                     confirmInfo.show = true;
                 }
 
+                // Function to handle tree deletion after confirmation
                 async function handleDeleteConfirm() {
                     const treeIdToDelete = confirmInfo.treeId;
-                    await db.trees.delete(treeIdToDelete);
-                    if (selectedTree.value?.id === treeIdToDelete) {
-                        selectedTree.value = null;
+                    await db.trees.delete(treeIdToDelete); // Delete from IndexedDB
+                    if (editingTreeId.value === treeIdToDelete) {
+                        editingTreeId.value = null; // Close editing form if the deleted tree was being edited
                     }
-                    confirmInfo.show = false;
-                    confirmInfo.treeId = null;
-                    await loadData();
+                    confirmInfo.show = false; // Hide confirmation modal
+                    confirmInfo.treeId = null; // Clear treeId
+                    await loadData(); // Reload data to update the list and canvas
                 }
 
+                // Function to add a tree using azimuth and distance inputs
                 function addTreeByAzimuth() {
                     const { distance, azimuth } = azimuthForm;
                     if (distance === null || azimuth === null) return;
-                    const centerX = plotCanvas.value.width / 2, centerY = plotCanvas.value.height / 2;
-                    const angleRad = (450 - azimuth) % 360 * Math.PI / 180;
-                    const scaledDistance = distance * METERS_TO_PIXELS_SCALE;
+
+                    const centerX = plotCanvas.value.width / 2;
+                    const centerY = plotCanvas.value.height / 2;
+                    const angleRad = (450 - azimuth) % 360 * Math.PI / 180; // Convert azimuth to radians
+                    const scaledDistance = distance * METERS_TO_PIXELS_SCALE; // Convert meters to pixels
+
+                    // Calculate canvas X and Y coordinates
                     const x = centerX + scaledDistance * Math.cos(angleRad);
                     const y = centerY - scaledDistance * Math.sin(angleRad);
-                    selectTree({ x, y }, true);
-                    azimuthForm.distance = null; azimuthForm.azimuth = null;
+
+                    createNewTree(x, y, azimuth, distance); // Create the new tree
+                    azimuthForm.distance = null; // Clear form fields
+                    azimuthForm.azimuth = null;
                 }
 
                 return {
-                    plot, trees, sortedTrees, plotCanvas, savePlotDetails, handleCanvasClick,
-                    selectedTree, isTreeFormOpen, selectTree, handleSaveTree, deleteTree,
-                    nextTreeNumber, icons, azimuthForm, addTreeByAzimuth, confirmInfo, handleDeleteConfirm
+                    plot, trees, sortedTrees, plotCanvas, handleCanvasClick, selectTreeForEditing, handleSaveTree, deleteTree,
+                    nextTreeNumber, azimuthForm, addTreeByAzimuth, confirmInfo, handleDeleteConfirm, activeTab, editingTreeId
                 };
             }
         };
 
         // --- VUE ROUTER SETUP ---
+        // Define application routes
         const routes = [
-            { path: '/', component: Home },
-            { path: '/project/:projectId/plots', component: PlotList },
-            { path: '/plot/:plotId', component: PlotObservation },
+            { path: '/', component: Home }, // Home page for project summary
+            { path: '/project/:projectId/plots', component: PlotList }, // List of plots for a specific project
+            { path: '/plot/:plotId', component: PlotObservation }, // Detailed observation for a single plot
         ];
-        const router = createRouter({ history: createWebHashHistory(), routes });
+
+        // Create the router instance
+        const router = createRouter({
+            history: createWebHashHistory(), // Use hash history for simple static file serving
+            routes,
+        });
 
         // --- VUE APP INITIALIZATION ---
-        // The root component's template contains the <router-view> tag,
-        // which is where the router will render the matched page component.
-        const app = createApp({
-            template: '<router-view></router-view>'
-        });
+        // Create the Vue application instance and use the router
+        const app = createApp({ template: '<router-view></router-view>' });
         app.use(router);
-        app.use(LucideVueNext);
+
+        // Mount the Vue application to the '#app' div
         app.mount('#app');
 
         // --- PWA Service Worker ---
-        // Service workers require the page to be served over HTTP/HTTPS and will not work on file:// URLs.
+        // Register a service worker for offline capabilities
         if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
             const swContent = `
-                const CACHE_NAME = 'forest-inventory-cache-v2';
+                const CACHE_NAME = 'forest-inventory-cache-v3'; // Updated cache version
                 const URLS_TO_CACHE = [
                     './',
                     'https://cdn.tailwindcss.com/',
                     'https://unpkg.com/vue@3/dist/vue.global.js',
                     'https://unpkg.com/vue-router@4/dist/vue-router.global.js',
                     'https://unpkg.com/dexie@3/dist/dexie.js',
-                    'https://unpkg.com/lucide-vue-next'
+                    'https://unpkg.com/primeicons/primeicons.css' // Added PrimeIcons to cache
                 ];
 
-                self.addEventListener('install', event => {
-                    event.waitUntil(
-                        caches.open(CACHE_NAME).then(cache => cache.addAll(URLS_TO_CACHE))
+                self.addEventListener('install', e => {
+                    e.waitUntil(
+                        caches.open(CACHE_NAME).then(c => {
+                            console.log('Service Worker: Caching assets');
+                            return c.addAll(URLS_TO_CACHE);
+                        }).catch(error => {
+                            console.error('Service Worker: Caching failed', error);
+                        })
                     );
                 });
 
-                self.addEventListener('fetch', event => {
-                    if (event.request.method !== 'GET') return;
-                    event.respondWith(
-                        caches.match(event.request).then(cachedResponse => {
-                            if (cachedResponse) {
-                                return cachedResponse;
-                            }
-                            return fetch(event.request).then(networkResponse => {
-                                if (networkResponse && networkResponse.status === 200) {
-                                    const responseToCache = networkResponse.clone();
-                                    caches.open(CACHE_NAME).then(cache => {
-                                        cache.put(event.request, responseToCache);
+                self.addEventListener('fetch', e => {
+                    if (e.request.method !== 'GET') return; // Only cache GET requests
+
+                    e.respondWith(
+                        caches.match(e.request).then(r => {
+                            // Return cached response if available, otherwise fetch from network
+                            return r || fetch(e.request).then(res => {
+                                // If fetch is successful, clone response and put in cache
+                                if (res && res.status === 200) {
+                                    const clone = res.clone();
+                                    caches.open(CACHE_NAME).then(c => {
+                                        c.put(e.request, clone);
                                     });
                                 }
-                                return networkResponse;
+                                return res;
                             });
+                        }).catch(error => {
+                            console.error('Service Worker: Fetch failed', error);
+                            // You could return an offline page here
                         })
                     );
                 });
@@ -709,16 +838,14 @@
             const swUrl = URL.createObjectURL(swBlob);
 
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register(swUrl)
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    })
-                    .catch(err => {
-                        console.error('ServiceWorker registration failed: ', err);
-                    });
+                navigator.serviceWorker.register(swUrl).then(reg => {
+                    console.log('Service Worker registered successfully:', reg);
+                }).catch(err => {
+                    console.error('Service Worker registration failed:', err);
+                });
             });
         } else if ('serviceWorker' in navigator) {
-             console.warn('Service Worker not registered. To enable offline PWA features, please serve this HTML file over a local server (http://localhost) instead of opening it directly as a file.');
+             console.warn('Service Worker not registered. To enable offline PWA features, please serve this HTML file over a local server (http://localhost).');
         }
     </script>
 </body>
