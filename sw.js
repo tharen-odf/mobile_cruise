@@ -1,4 +1,4 @@
-const CACHE_NAME = 'forest-inventory-cache-v3'; // Updated cache version
+const CACHE_NAME = 'forest-inventory-cache-v4'; // Updated cache version
 const URLS_TO_CACHE = [
     './',
     'https://cdn.tailwindcss.com/',
