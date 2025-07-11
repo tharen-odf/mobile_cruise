@@ -1,0 +1,21 @@
+{
+  "name": "Forest Inventory PWA",
+  "short_name": "FIx",
+  "description": "An offline-first PWA for collecting forest inventory data.",
+  "icons": [
+    {
+      "src": "https://placehold.co/192x192/25635b/31363f?text=FIx",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://placehold.co/512x512/25635b/31363f?text=FIx",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#25635b",
+  "background_color": "#f8fafc"
+}
