@@ -9,13 +9,13 @@
     <!-- Web App Manifest -->
     <!-- <link rel="manifest" href="data:application/json;base64,ew0KICAibmFtZSI6ICJGb3Jlc3QgSW52ZW50b3J5IFBXQSIsDQogICJzaG9ydF9uYW1lIjogIkZJeCIsDQogICJkZXNjcmlwdGlvbiI6ICJBbiBvZmZsaW5lLWZpcnN0IFBXQSBmb3IgY29sbGVjdGluZyBmb3Jlc3QgaW52ZW50b3J5IGRhdGEuIiwNCiAgImljb25zIjogWw0KICAgIHsNCiAgICAgICJzcmMiOiAiaHR0cHM6Ly9wbGFjZWhvbGQuY28vMTkyeDE5Mi8yNTYzNWIvMzEzNjNmP3RleHQ9Rkl4IiwNCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwNCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyINCiAgICB9LA0KICAgIHsNCiAgICAgICJzcmMiOiAiaHR0cHM6Ly9wbGFjZWhvbGQuY28vNTEyeDUxMi8yNTYzNWIvMzEzNjNmP3RleHQ9Rkl4IiwNCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwNCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyINCiAgICB9DQogIF0sDQogICJzdGFydF91cmwiOiAiLiIsDQogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLA0KICAidGhlbWVfY29sb3IiOiAiIzI1NjM1YiIsDQogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmOGZhZmMiDQp9"> -->
     <meta name="theme-color" content="#25635b">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/mobile_cruise/manifest.json">
 
     <!-- PrimeIcons CSS -->
     <link rel="stylesheet" href="https://unpkg.com/primeicons@6.0.1/primeicons.css">
 
     <!-- Tailwind CSS -->
-    <link href="/style.css" rel="stylesheet">
+    <link href="/mobile_cruise/style.css" rel="stylesheet">
 
     <style>
 
@@ -801,7 +801,7 @@
         // Please save the content below into a file named 'sw.js' in the same directory as your index.html.
         if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js').then(reg => {
+                navigator.serviceWorker.register('/mobile_cruise/service-worker.js').then(reg => {
                     console.log('Service Worker registered successfully:', reg);
                 }).catch(err => {
                     console.error('Service Worker registration failed:', err);
