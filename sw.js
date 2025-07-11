@@ -1,8 +1,7 @@
-const CACHE_NAME = 'forest-inventory-cache-v5'; // Updated cache version
+const CACHE_NAME = 'forest-inventory-cache-v6'; // Updated cache version
 const URLS_TO_CACHE = [
-    './',
-    './index.html',
-    './sw.js',
+    '/index.html',
+    '/sw.js',
     'https://cdn.tailwindcss.com/',
     'https://unpkg.com/vue@3/dist/vue.global.js',
     'https://unpkg.com/vue-router@4/dist/vue-router.global.js',
@@ -41,5 +40,17 @@ self.addEventListener('fetch', e => {
             console.error('Service Worker: Fetch failed', error);
             // You could return an offline page here
         })
+    );
+});
+
+// Clean up old caches (optional, but recommended)
+self.addEventListener('activate', e => {
+    e.waitUntil(
+        caches.keys().then(keys =>
+            Promise.all(
+                keys.filter(key => key !== CACHE_NAME)
+                    .map(key => caches.delete(key))
+            )
+        )
     );
 });
