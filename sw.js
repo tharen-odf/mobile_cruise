@@ -1,6 +1,8 @@
-const CACHE_NAME = 'forest-inventory-cache-v4'; // Updated cache version
+const CACHE_NAME = 'forest-inventory-cache-v5'; // Updated cache version
 const URLS_TO_CACHE = [
     './',
+    './index.html',
+    './sw.js',
     'https://cdn.tailwindcss.com/',
     'https://unpkg.com/vue@3/dist/vue.global.js',
     'https://unpkg.com/vue-router@4/dist/vue-router.global.js',
