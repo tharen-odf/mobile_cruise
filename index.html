@@ -69,9 +69,9 @@
         // --- DATABASE SETUP (Dexie.js) ---
         const db = new Dexie('ForestInventoryDB');
         db.version(1).stores({
-            projects: '++id, name', // Primary key 'id', indexed 'name'
-            plots: '++id, projectId, plotNumber', // Primary key 'id', indexed 'projectId' and 'plotNumber'
-            trees: '++id, plotId, treeNumber', // Primary key 'id', indexed 'plotId' and 'treeNumber'
+            projects: 'id, name', // Primary key 'id' (UUID), indexed 'name'
+            plots: 'id, projectId, plotNumber', // Primary key 'id' (UUID), indexed 'projectId' and 'plotNumber'
+            trees: 'id, plotId, treeNumber', // Primary key 'id' (UUID), indexed 'plotId' and 'treeNumber'
         });
 
         // --- MOCK USER (for tracking updates) ---
@@ -132,6 +132,13 @@
                 return {}; // No specific state or methods needed for this simple component
             }
         };
+
+        // Utility function for UUID (uses browser's crypto API)
+        function uuid() {
+            return (crypto.randomUUID ? crypto.randomUUID() : ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            ));
+        }
 
         // --- COMPONENT: Home / Project Summary ---
         // Displays a list of projects, allows creating new projects, and importing/exporting.
@@ -213,8 +220,9 @@
 
                 // Function to add a new project to IndexedDB
                 async function addProject() {
-                    if (!newProjectName.value.trim()) return; // Prevent adding empty project names
+                    if (!newProjectName.value.trim()) return;
                     await db.projects.add({
+                        id: uuid(),
                         name: newProjectName.value,
                         createdAt: new Date().toISOString(),
                         lastUpdated: new Date().toISOString(),
@@ -249,32 +257,35 @@
                     reader.onload = async (e) => {
                         try {
                             const data = JSON.parse(e.target.result);
-                            // Basic validation of the imported data structure
                             if (!data.project || !data.plots || !data.trees) {
                                 showAlert('Import Error', 'Invalid project file format.');
                                 return;
                             }
 
-                            // Use Dexie's transaction for atomic operations
                             await db.transaction('rw', db.projects, db.plots, db.trees, async () => {
-                                // Add new project, then link plots and trees to the new project ID
-                                delete data.project.id; // Dexie will auto-generate a new ID
-                                const newProjectId = await db.projects.add(data.project);
+                                // Add new project with new UUID
+                                const oldProjectId = data.project.id;
+                                data.project.id = uuid();
+                                const newProjectId = data.project.id;
+                                await db.projects.add(data.project);
 
+                                // Map old plot IDs to new UUIDs
+                                const plotIdMap = {};
                                 for (const plot of data.plots) {
                                     const oldPlotId = plot.id;
-                                    delete plot.id; // Dexie will auto-generate a new ID
-                                    plot.projectId = newProjectId; // Link to the new project
-                                    const newPlotId = await db.plots.add(plot);
+                                    plot.id = uuid();
+                                    plot.projectId = newProjectId;
+                                    plotIdMap[oldPlotId] = plot.id;
+                                    await db.plots.add(plot);
+                                }
 
-                                    const relatedTrees = data.trees.filter(t => t.plotId === oldPlotId);
-                                    for (const tree of relatedTrees) {
-                                        delete tree.id; // Dexie will auto-generate a new ID
-                                        tree.plotId = newPlotId; // Link to the new plot
-                                    }
-                                    if (relatedTrees.length > 0) {
-                                        await db.trees.bulkAdd(relatedTrees); // Add trees in bulk for performance
-                                    }
+                                // Add trees with new UUIDs and updated plotId
+                                for (const tree of data.trees) {
+                                    tree.id = uuid();
+                                    tree.plotId = plotIdMap[tree.plotId];
+                                }
+                                if (data.trees.length > 0) {
+                                    await db.trees.bulkAdd(data.trees);
                                 }
                             });
                             showAlert('Success', 'Project imported successfully!');
@@ -358,7 +369,7 @@
             setup() {
                 const route = useRoute(); // Access current route information
                 const router = useRouter(); // Access router instance
-                const projectId = Number(route.params.projectId); // Get projectId from route params
+                const projectId = route.params.projectId; // Get projectId from route params
                 const project = ref({}); // Reactive reference for the current project
                 const plots = ref([]); // Reactive reference for plots in the project
                 const newPlotNumber = ref(null); // Reactive reference for new plot number input
@@ -387,6 +398,7 @@
                 async function addPlot() {
                     if (newPlotNumber.value === null) return; // Prevent adding empty plot number
                     await db.plots.add({
+                        id: uuid(),
                         projectId: projectId,
                         plotNumber: newPlotNumber.value,
                         slope: 0,
@@ -543,7 +555,7 @@
             `,
             setup() {
                 const route = useRoute(); // Access current route information
-                const plotId = Number(route.params.plotId); // Get plotId from route params
+                const plotId = route.params.plotId; // Get plotId from route params
                 const plot = ref({}); // Reactive reference for the current plot
                 const trees = ref([]); // Reactive reference for trees in the plot
                 const plotCanvas = ref(null); // Reactive reference for the canvas element
@@ -641,6 +653,7 @@
                 // Function to create a new tree record
                 async function createNewTree(x, y, azimuth = null, distance = null) {
                     const newTree = {
+                        id: uuid(),
                         plotId: plotId,
                         treeNumber: nextTreeNumber.value,
                         species: '',
@@ -648,17 +661,17 @@
                         diameter: null,
                         height: null,
                         notes: '',
-                        x, y, // Canvas coordinates
-                        azimuth, distance, // Azimuth and distance from plot center
+                        x, y,
+                        azimuth, distance,
                         createdAt: new Date().toISOString(),
                         lastUpdated: new Date().toISOString(),
                         updatedBy: currentUser.username,
                     };
-                    const id = await db.trees.add(newTree); // Add to IndexedDB
-                    await loadData(); // Reload data to update tree list and canvas
-                    activeTab.value = 'list'; // Switch to list view to allow immediate editing
-                    await nextTick(); // Wait for DOM update
-                    editingTreeId.value = id; // Open the newly created tree for editing
+                    const id = await db.trees.add(newTree);
+                    await loadData();
+                    activeTab.value = 'list';
+                    await nextTick();
+                    editingTreeId.value = id;
                 }
 
                 // Handle click events on the canvas
