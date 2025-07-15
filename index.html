@@ -14,8 +14,11 @@
   <!-- PrimeIcons CSS -->
   <link rel="stylesheet" href="https://unpkg.com/primeicons@6.0.1/primeicons.css">
 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css" />
+
   <!-- Tailwind CSS -->
   <link href="/mobile_cruise/css/style.css" rel="stylesheet">
+  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
 
   <style>
 
@@ -72,6 +75,20 @@
 
     // --- MOCK USER (for tracking updates) ---
     const currentUser = { username: 'field_user_01' };
+    const sample_codes = ['B1', 'F1', 'S1', 'B2', 'F2', 'S2']; // Sample codes for trees
+    const species_list = ['DF', 'WH', 'RA', 'BM', 'NF']; // Example species list
+    const status_list = ['Live', 'Dead', 'Cut']; // Example status list
+    const crown_ratio_list = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]; // Crown ratio percentages
+    const crown_position_list = ['Over-story', 'Dominant', 'Co-dominant', 'Intermediate', 'Suppressed', 'Under-story']; // Crown position options
+    const vigor_list = ['High', 'Moderate', 'Low', 'Dead']; // Vigor options
+    const damage_list = ['Animal', 'Mechanical', 'Fire', 'Disease', 'Insect']; // Damage options
+
+    // Utility function for UUID (uses browser's crypto API)
+    function uuid() {
+      return (crypto.randomUUID ? crypto.randomUUID() : ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      ));
+    }
 
     // --- COMPONENT: Alert Modal ---
     // A simple modal for displaying alerts to the user.
@@ -129,64 +146,117 @@
       }
     };
 
-    // Utility function for UUID (uses browser's crypto API)
-    function uuid() {
-      return (crypto.randomUUID ? crypto.randomUUID() : ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-      ));
-    }
+    // --- NavBar Component (Updated with correct absolute positioning) ---
+    const NavBar = {
+      props: ['breadcrumbs'],
+      emits: ['import'],
+      template: `
+        <div class="relative">
+          <nav class="bg-white border-b border-gray-200 rounded-md">
+            <div class="max-w-7xl mx-auto px-2 py-1 flex items-center justify-between">
+              <!-- Breadcrumbs -->
+              <div class="flex items-center space-x-2">
+                <template v-for="(crumb, idx) in breadcrumbs || []" :key="idx">
+                  <router-link
+                    v-if="crumb && crumb.to"
+                    :to="crumb.to"
+                    class="text-teal-700 hover:underline font-medium"
+                  >{{ crumb.label }}</router-link>
+                  <span v-else-if="crumb" class="text-gray-500">{{ crumb.label }}</span>
+                  <span v-if="idx < (breadcrumbs?.length || 0) - 1" class="mx-1 text-gray-400">/</span>
+                </template>
+              </div>
+              <!-- Hamburger Button and Dropdown Container -->
+              <div class="relative">
+                <button @click="menuOpen = !menuOpen" class="inline-flex items-center justify-center p-2 rounded-md text-teal-700 hover:bg-gray-100">
+                  <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                  </svg>
+                </button>
+
+                <!-- Hamburger Menu Dropdown (absolutely positioned) -->
+                <div v-if="menuOpen" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                  <div class="py-1">
+                    <label for="import-json-navbar" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                      <i class="pi pi-upload mr-2"></i> Import Project
+                    </label>
+                    <input id="import-json-navbar" type="file" @change="$emit('import', $event)" class="hidden" accept=".json">
+                    <button class="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" disabled>
+                      <i class="pi pi-wrench mr-2"></i> Tools (coming soon)
+                    </button>
+                    <button class="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" disabled>
+                      <i class="pi pi-cog mr-2"></i> Setup (coming soon)
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </nav>
+        </div>
+      `,
+      data() {
+        return { menuOpen: false };
+      },
+      mounted() {
+        document.addEventListener('click', this.closeMenuOnClickOutside);
+      },
+      beforeUnmount() {
+        document.removeEventListener('click', this.closeMenuOnClickOutside);
+      },
+      methods: {
+        closeMenuOnClickOutside(event) {
+          if (this.menuOpen && !this.$el.contains(event.target)) {
+            this.menuOpen = false;
+          }
+        }
+      }
+    };
 
     // --- COMPONENT: Home / Project Summary ---
     // Displays a list of projects, allows creating new projects, and importing/exporting.
     const Home = {
-      components: { AlertModal }, // Register AlertModal for use in this component
+      components: { AlertModal, NavBar },
       template: `
-        <div class="space-y-6">
-          <!-- Alert Modal display -->
-          <AlertModal v-if="alertInfo.show" :title="alertInfo.title" :message="alertInfo.message" @close="alertInfo.show = false" />
+        <div>
+          <NavBar :breadcrumbs="breadcrumbs" @import="importProject"/>
+          <div class="space-y-6">
+            <!-- Alert Modal display -->
+            <AlertModal v-if="alertInfo.show" :title="alertInfo.title" :message="alertInfo.message" @close="alertInfo.show = false" />
 
-          <header class="flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-teal-800">Projects</h1>
-            <div class="flex items-center space-x-2">
-              <label for="import-json" class="btn btn-secondary cursor-pointer">
-                <i class="pi pi-upload h-5 w-5 mr-2"></i> Import
-              </label>
-              <input id="import-json" type="file" @change="importProject" class="hidden" accept=".json">
-            </div>
-          </header>
-
-          <!-- Create New Project Section -->
-          <div class="bg-white p-4 rounded-lg shadow">
-            <h2 class="text-xl font-semibold mb-2">Create New Project</h2>
-            <form @submit.prevent="addProject" class="flex flex-col sm:flex-row gap-2">
-              <input v-model="newProjectName" type="text" placeholder="Enter project name" class="input flex-grow" required>
-              <button type="submit" class="btn btn-primary">
-                <i class="pi pi-plus h-5 w-5 mr-2"></i> Create Project
-              </button>
-            </form>
-          </div>
-
-          <!-- Existing Projects List -->
-          <div>
-            <h2 class="text-xl font-semibold mb-2">Existing Projects</h2>
-            <div v-if="projects.length === 0" class="text-center text-gray-500 py-8">No projects found. Create one to get started!</div>
-            <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div v-for="project in projects" :key="project.id" class="card transition-transform hover:scale-105">
-                <div class="flex-grow">
+            <!-- Existing Projects List -->
+            <div>
+              <h2 class="text-xl font-semibold mb-2">Existing Projects</h2>
+              <div v-if="projects.length === 0" class="text-center text-gray-500 py-8">No projects found. Create one to get started!</div>
+              <div v-else class="grid grid-cols-1">
+                <div v-for="project in projects" :key="project.id" class="card mb-2 hover:bg-lime-50 transition-colors">
+                  <div class="flex-grow">
                   <h3 class="text-lg font-bold text-teal-700">{{ project.name }}</h3>
                   <p class="text-sm text-gray-500">Created: {{ new Date(project.createdAt).toLocaleString() }}</p>
                   <p class="text-sm text-gray-500">Plots: {{ project.plotCount || 0 }}</p>
-                </div>
-                <div class="mt-4 flex flex-wrap gap-2">
+                  </div>
+                  <div class="mt-4 flex flex-wrap gap-2">
                   <router-link :to="'/project/' + project.id + '/plots'" class="btn btn-primary text-sm flex-grow">
                     <i class="pi pi-eye h-4 w-4 mr-2"></i> View Plots
                   </router-link>
                   <button @click="exportProject(project.id)" class="btn btn-secondary text-sm flex-grow">
                     <i class="pi pi-download h-4 w-4 mr-2"></i> Export
                   </button>
+                  </div>
                 </div>
               </div>
             </div>
+
+            <!-- Create New Project Section -->
+            <div class="bg-white p-2 rounded-lg shadow">
+              <h2 class="text-xl font-semibold mb-2">Create New Project</h2>
+              <form @submit.prevent="addProject" class="flex flex-col sm:flex-row gap-2">
+                <input v-model="newProjectName" type="text" placeholder="Enter project name" class="input flex-grow" required>
+                <button type="submit" class="btn btn-primary">
+                  <i class="pi pi-plus h-5 w-5 mr-2"></i> Create Project
+                </button>
+              </form>
+            </div>
+
           </div>
         </div>
       `,
@@ -295,45 +365,33 @@
           event.target.value = ''; // Clear the file input
         }
 
-        return { projects, newProjectName, addProject, exportProject, importProject, alertInfo };
+        // Breadcrumbs for Home
+        const breadcrumbs = [
+          { label: 'Projects', to: '/' }
+        ];
+
+        return { projects, newProjectName, addProject, exportProject, importProject, alertInfo, breadcrumbs };
       }
     };
 
     // --- COMPONENT: PlotList ---
     // Displays a list of plots for a specific project, allows adding/deleting plots, and updating plot details.
     const PlotList = {
-      components: { ConfirmationModal }, // Register ConfirmationModal
+      components: { ConfirmationModal, NavBar },
       template: `
         <div>
+          <NavBar :breadcrumbs="breadcrumbs" @import="importProject"/>
           <!-- Confirmation Modal display -->
           <ConfirmationModal v-if="confirmInfo.show" title="Delete Plot" message="Are you sure you want to delete this plot and all its associated trees? This action cannot be undone." @confirm="handleDeleteConfirm" @cancel="confirmInfo.show = false"/>
-
-          <header class="mb-4">
-            <router-link to="/" class="text-teal-600 hover:underline flex items-center">
-              <i class="pi pi-arrow-left h-4 w-4 mr-1"></i> Back to Projects
-            </router-link>
-            <h1 class="text-3xl font-bold text-teal-800 mt-2">{{ project.name }}</h1>
-          </header>
-
-          <!-- Add New Plot Section -->
-          <div class="bg-white p-4 rounded-lg shadow mb-6">
-            <h2 class="text-xl font-semibold mb-2">Add New Plot</h2>
-            <form @submit.prevent="addPlot" class="flex flex-col sm:flex-row gap-2">
-              <input v-model.number="newPlotNumber" type="number" min="0" placeholder="Enter plot number" class="input-field flex-grow" required>
-              <button type="submit" class="btn btn-primary">
-                <i class="pi pi-plus h-5 w-5 mr-2"></i> Add Plot
-              </button>
-            </form>
-          </div>
 
           <!-- Survey Plots List -->
           <div>
             <h2 class="text-xl font-semibold mb-2">Survey Plots</h2>
             <div v-if="plots.length === 0" class="text-center text-gray-500 py-8">No plots found for this project. Add one to begin.</div>
-            <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div v-for="plot in plots" :key="plot.id" class="card">
+            <div v-else class="grid grid-cols-1">
+              <div v-for="plot in plots" :key="plot.id" class="card mb-2 hover:bg-lime-50 transition-colors">
                 <h3 class="text-lg font-bold text-teal-700">Plot #{{ plot.plotNumber }}</h3>
-                <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div class="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <div>
                     <label class="block text-xs font-medium text-gray-500">Slope (%)</label>
                     <input v-model.number="plot.slope" min="0" @change="updatePlot(plot)" type="number" class="input-field text-sm p-1">
@@ -360,6 +418,18 @@
               </div>
             </div>
           </div>
+
+          <!-- Add New Plot Section -->
+          <div class="bg-white p-4 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-semibold mb-2">Add New Plot</h2>
+            <form @submit.prevent="addPlot" class="flex flex-col sm:flex-row gap-2">
+              <input v-model.number="newPlotNumber" type="number" min="0" placeholder="Enter plot number" class="input-field flex-grow" required>
+              <button type="submit" class="btn btn-primary">
+                <i class="pi pi-plus h-5 w-5 mr-2"></i> Add Plot
+              </button>
+            </form>
+          </div>
+
         </div>
       `,
       setup() {
@@ -438,28 +508,105 @@
           await loadData(); // Reload to refresh timestamp and tree counts
         }
 
-        return { project, plots, newPlotNumber, addPlot, deletePlot, confirmInfo, handleDeleteConfirm, updatePlot };
+        // Breadcrumbs for PlotList
+        const breadcrumbs = computed(() => [
+          { label: 'Projects', to: '/' },
+          { label: project.value.name || 'Project', to: `/project/${projectId}/plots` }
+        ]);
+
+        function importProject(e) {
+          // Optionally, you can emit or handle import here
+        }
+
+        return { project, plots, newPlotNumber, addPlot, deletePlot, confirmInfo, handleDeleteConfirm, updatePlot, breadcrumbs, importProject };
       }
     };
 
     // --- COMPONENT: Tree Edit Form (Embedded) ---
     // A form for editing individual tree details. Used within PlotObservation.
     const TreeEditForm = {
-      props: ['tree'], // Prop for the tree object to be edited
+      props: ['tree', 'status_list'], // Prop for the tree object to be edited
       emits: ['save', 'cancel'], // Emits 'save' with updated tree data or 'cancel'
       template: `
-        <div class="bg-teal-50 p-4 rounded-b-md -mt-2">
+        <div class="bg-lime-100 p-4 rounded-b-md -mt-2">
           <h4 class="font-semibold text-teal-800 mb-2">Editing Tree #{{ localTree.treeNumber }}</h4>
           <form @submit.prevent="saveTree" class="space-y-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div><label class="block text-sm font-medium text-gray-700">Species</label><input v-model="localTree.species" type="text" placeholder="e.g., PSME" class="input-field" required></div>
-              <div><label class="block text-sm font-medium text-gray-700">Status</label><select v-model="localTree.status" class="input-field"><option>Live</option><option>Dead</option><option>Cut</option></select></div>
-              <div><label class="block text-sm font-medium text-gray-700">Diameter (cm)</label><input v-model.number="localTree.diameter" type="number" step="0.1" placeholder="e.g., 45.2" class="input-field" required></div>
-              <div><label class="block text-sm font-medium text-gray-700">Height (m)</label><input v-model.number="localTree.height" type="number" step="0.1" placeholder="e.g., 30.5" class="input-field"></div>
-              <div><label class="block text-sm font-medium text-gray-700">Azimuth (°)</label><input v-model.number="localTree.azimuth" type="number" step="0.1" class="input-field"></div>
-              <div><label class="block text-sm font-medium text-gray-700">Distance (m)</label><input v-model.number="localTree.distance" type="number" step="0.1" class="input-field"></div>
+            <div class="flex flex-wrap gap-2">
+              <div class="flex-grow" style="width:110px;">
+              <label class="block text-sm font-medium text-gray-700">Sample Code</label>
+              <input v-model="localTree.sample_code" type="text" placeholder="e.g., B1, F1" class="input-field" style="width:80px;" required>
+              </div>
+              <div class="flex-grow" style="width:110px;">
+              <label class="block text-sm font-medium text-gray-700">Species</label>
+              <input v-model="localTree.species" type="text" placeholder="e.g., DF" class="input-field" style="width:80px;" required>
+              </div>
+              <div class="flex-grow" style="width:110px;">
+              <label class="block text-sm font-medium text-gray-700">Status</label>
+              <select v-model="localTree.status" class="input-field" style="width:80px;">
+              <option v-for="status in status_list" :key="status" :value="status">{{ status }}</option>
+              </select>
+              </div>
+              <div class="flex-grow" style="width:90px;">
+              <label class="block text-sm font-medium text-gray-700">Count</label>
+              <input v-model.number="localTree.count" type="number" step="1.0" placeholder="e.g., 1" class="input-field" style="width:80px;" required>
+              </div>
+              <div class="flex-grow" style="width:110px;">
+              <label class="block text-sm font-medium text-gray-700">DBH (in)</label>
+              <input v-model.number="localTree.diameter" type="number" step="0.1" placeholder="e.g., 45.2" class="input-field" style="width:80px;" required>
+              </div>
+              <div class="flex-grow" style="width:110px;">
+              <label class="block text-sm font-medium text-gray-700">Form Point</label>
+              <input v-model.number="localTree.form_pnt" type="number" step="0.1" placeholder="e.g., 4.5" class="input-field" style="width:80px;" required>
+              </div>
+              <div class="flex-grow" style="width:110px;">
+              <label class="block text-sm font-medium text-gray-700">Form Factor</label>
+              <input v-model.number="localTree.form_factor" type="number" step="0.1" placeholder="e.g., 85.2" class="input-field" style="width:80px;">
+              </div>
+              <div class="flex-grow" style="width:110px;">
+              <label class="block text-sm font-medium text-gray-700">Bole Diam</label>
+              <input v-model.number="localTree.bole_diam" type="text" step="0.1" placeholder="e.g., F" class="input-field" style="width:80px;">
+              </div>
+              <div class="flex-grow" style="width:110px;">
+              <label class="block text-sm font-medium text-gray-700">Bole Ht.</label>
+              <input v-model.number="localTree.bole_height" type="number" step="0.1" placeholder="e.g., 99" class="input-field" style="width:80px;">
+              </div>
+              <div class="flex-grow" style="width:110px;">
+              <label class="block text-sm font-medium text-gray-700">Total Ht.</label>
+              <input v-model.number="localTree.total_height" type="number" step="0.1" placeholder="e.g., 120.5" class="input-field" style="width:80px;">
+              </div>
+              <div class="flex-grow" style="width:110px;">
+              <label class="block text-sm font-medium text-gray-700">Breast Ht. Age</label>
+              <input v-model.number="localTree.bh_age" type="number" step="1.0" placeholder="e.g., 42" class="input-field" style="width:80px;">
+              </div>
+              <div class="flex-grow" style="width:130px;">
+              <label class="block text-sm font-medium text-gray-700">Crown Position</label>
+              <input v-model="localTree.crown_position" type="text" placeholder="e.g., C = Co-dominant" class="input-field" style="width:80px;">
+              </div>
+              <div class="flex-grow" style="width:110px;">
+              <label class="block text-sm font-medium text-gray-700">Crown Ratio</label>
+              <input v-model.number="localTree.crown_ratio" type="number" step="1.0" placeholder="e.g., 2 | 20" class="input-field" style="width:80px;">
+              </div>
+              <div class="flex-grow" style="width:110px;">
+              <label class="block text-sm font-medium text-gray-700">Vigor</label>
+              <input v-model="localTree.vigor" type="text" placeholder="e.g., H = Healthy" class="input-field" style="width:80px;">
+              </div>
+              <div class="flex-grow" style="width:110px;">
+              <label class="block text-sm font-medium text-gray-700">Damage</label>
+              <input v-model="localTree.damage" type="text" placeholder="e.g., A = Animal" class="input-field" style="width:80px;">
+              </div>
+              <div class="flex-grow" style="width:110px;">
+              <label class="block text-sm font-medium text-gray-700">Azimuth (°)</label>
+              <input v-model.number="localTree.azimuth" type="number" step="0.1" class="input-field" style="width:80px;">
+              </div>
+              <div class="flex-grow" style="width:110px;">
+              <label class="block text-sm font-medium text-gray-700">Distance (m)</label>
+              <input v-model.number="localTree.distance" type="number" step="0.1" class="input-field" style="width:80px;">
+              </div>
             </div>
-            <div><label class="block text-sm font-medium text-gray-700">Notes</label><textarea v-model="localTree.notes" placeholder="Any additional notes..." class="input-field" rows="2"></textarea></div>
+            <div class="col-span-full">
+              <label class="block text-sm font-medium text-gray-700">Notes</label>
+              <textarea v-model="localTree.notes" placeholder="Any additional notes..." class="input-field w-full" rows="2"></textarea>
+            </div>
             <div class="pt-2 flex justify-end space-x-3">
               <button type="button" @click="$emit('cancel')" class="btn btn-secondary">Cancel</button>
               <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -489,65 +636,83 @@
     // Displays details for a single plot, including a tree map and a list of recorded trees.
     // Allows adding trees visually or by azimuth/distance, and editing/deleting trees.
     const PlotObservation = {
-      components: { TreeEditForm, ConfirmationModal }, // Register TreeEditForm and ConfirmationModal
+      components: { TreeEditForm, ConfirmationModal, NavBar },
       template: `
-        <div v-if="plot.id">
-          <!-- Confirmation Modal display -->
-          <ConfirmationModal v-if="confirmInfo.show" title="Delete Tree" message="Are you sure you want to delete this tree? This action cannot be undone." @confirm="handleDeleteConfirm" @cancel="confirmInfo.show = false"/>
+        <div>
+          <NavBar :breadcrumbs="breadcrumbs" @import="importProject"/>
+          <div v-if="plot.id">
+            <!-- Confirmation Modal display -->
+            <ConfirmationModal v-if="confirmInfo.show" title="Delete Tree" message="Are you sure you want to delete this tree? This action cannot be undone." @confirm="handleDeleteConfirm" @cancel="confirmInfo.show = false"/>
 
-          <header class="mb-4">
-            <router-link :to="'/project/' + plot.projectId + '/plots'" class="text-teal-600 hover:underline flex items-center">
-              <i class="pi pi-arrow-left h-4 w-4 mr-1"></i> Back to Plot List
-            </router-link>
-            <h1 class="text-3xl font-bold text-teal-800 mt-2">Plot #{{ plot.plotNumber }}</h1>
-          </header>
-
-          <!-- Tabs for Tree Map and Recorded Trees -->
-          <div class="mb-4 border-b border-gray-200">
-            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-              <button @click="activeTab = 'map'" :class="[activeTab === 'map' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">Tree Map</button>
-              <button @click="activeTab = 'list'" :class="[activeTab === 'list' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">Recorded Trees ({{ trees.length }})</button>
-            </nav>
-          </div>
-
-          <!-- Tree Map Tab Content -->
-          <div v-show="activeTab === 'map'" class="bg-white p-4 rounded-lg shadow">
-            <h2 class="text-xl font-semibold mb-2">Tree Entry</h2>
-            <div class="mb-4 p-4 border border-gray-200 rounded-md">
-              <h3 class="font-semibold mb-2">Add Tree by Distance & Azimuth</h3>
-              <form @submit.prevent="addTreeByAzimuth" class="flex flex-col sm:flex-row gap-2 items-end">
-                <div class="flex-grow"><label class="block text-sm font-medium text-gray-700">Azimuth (°)</label><input v-model.number="azimuthForm.azimuth" type="number" step="0.1" class="input-field" required></div>
-                <div class="flex-grow"><label class="block text-sm font-medium text-gray-700">Distance (m)</label><input v-model.number="azimuthForm.distance" type="number" step="0.1" class="input-field" required></div>
-                <button type="submit" class="btn btn-secondary w-full sm:w-auto">
-                  <i class="pi pi-plus h-5 w-5 mr-2"></i> Add
-                </button>
-              </form>
+            <!-- Tabs for Tree Map and Recorded Trees -->
+            <div class="mb-4 border-b border-gray-200">
+              <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                <button @click="activeTab = 'map'" :class="[activeTab === 'map' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">Tree Map</button>
+                <button @click="activeTab = 'list'" :class="[activeTab === 'list' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">Recorded Trees ({{ trees.length }})</button>
+              </nav>
             </div>
-            <p class="text-sm text-gray-500 mb-2">Or, tap on the canvas below to add a tree visually. A new tree will be created and can be edited in the 'Recorded Trees' tab.</p>
-            <canvas ref="plotCanvas" class="plot-canvas w-full rounded-md" @click="handleCanvasClick"></canvas>
-          </div>
 
-          <!-- Recorded Trees Tab Content -->
-          <div v-if="activeTab === 'list'" class="bg-white p-4 rounded-lg shadow">
-            <h2 class="text-xl font-semibold mb-2">Recorded Trees</h2>
-            <ul class="space-y-2 max-h-[60vh] overflow-y-auto">
-              <li v-if="trees.length === 0" class="text-center text-gray-500 py-8">No trees recorded for this plot yet.</li>
-              <li v-for="tree in sortedTrees" :key="tree.id" class="bg-gray-50 rounded-lg shadow-sm">
-                <div @click="selectTreeForEditing(tree)" class="p-3 cursor-pointer flex justify-between items-center" :class="editingTreeId === tree.id ? 'bg-teal-100 rounded-t-lg' : 'hover:bg-gray-100 rounded-lg'">
-                  <div><p class="font-bold">Tree #{{ tree.treeNumber }}</p><p class="text-sm text-gray-600">{{ tree.species || 'No species' }} - {{ tree.diameter || 'N/A' }}cm</p></div>
-                  <div class="flex items-center space-x-2">
-                    <button @click.stop="deleteTree(tree.id)" class="text-red-500 hover:text-red-700 p-1 rounded-full">
-                      <i class="pi pi-trash h-4 w-4"></i>
-                    </button>
-                    <i :class="editingTreeId === tree.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" class="h-5 w-5 text-gray-500"></i>
+            <!-- Tree Map Tab Content -->
+            <div v-show="activeTab === 'map'" class="bg-white p-2 rounded-lg shadow">
+              <h2 class="text-xl font-semibold mb-2">Tree Entry</h2>
+              <div class="bg-lime-100 mb-4 p-4 border border-gray-200 rounded-md">
+                <h3 class="font-semibold mb-2">Add Tree by Distance & Azimuth</h3>
+                <form @submit.prevent="addTreeByAzimuth" class="flex flex-col sm:flex-row gap-1 items-end flex-wrap">
+                  <div class="flex-grow" style="width:110px;">
+                    <label class="block text-sm font-medium text-gray-700">Sample Code</label>
+                    <input v-model="azimuthForm.sample_code" type="text" class="input-field" required style="width:100px;">
                   </div>
-                </div>
-                <TreeEditForm v-if="editingTreeId === tree.id" :tree="tree" @save="handleSaveTree" @cancel="editingTreeId = null"/>
-              </li>
-            </ul>
+                  <div class="flex-grow" style="width:110px;">
+                    <label class="block text-sm font-medium text-gray-700">Status</label>
+                    <input v-model="azimuthForm.status" type="text" class="input-field" required style="width:100px;">
+                  </div>
+                  <div class="flex-grow" style="width:110px;">
+                    <label class="block text-sm font-medium text-gray-700">Species</label>
+                    <input v-model="azimuthForm.species" type="text" class="input-field" required style="width:100px;">
+                  </div>
+                  <div class="flex-grow" style="width:120px;">
+                    <label class="block text-sm font-medium text-gray-700">DBH (in)</label>
+                    <input v-model.number="azimuthForm.dbh" type="number" step="0.1" class="input-field" required style="width:100px;">
+                  </div>
+                  <div class="flex-grow" style="width:130px;">
+                    <label class="block text-sm font-medium text-gray-700">Azimuth (°)</label>
+                    <input v-model.number="azimuthForm.azimuth" type="number" step="0.1" class="input-field" required style="width:110px;">
+                  </div>
+                  <div class="flex-grow" style="width:130px;">
+                    <label class="block text-sm font-medium text-gray-700">Distance (m)</label>
+                    <input v-model.number="azimuthForm.distance" type="number" step="0.1" class="input-field" required style="width:110px;">
+                  </div>
+                  <button type="submit" class="btn btn-secondary w-full sm:w-auto" style="width:80px;">
+                    <i class="pi pi-plus h-5 w-5 mr-2"></i> Add
+                  </button>
+                </form>
+              </div>
+              <p class="text-sm text-gray-500 mb-2">Or, tap on the canvas below to add a tree visually. A new tree will be created and can be edited in the 'Recorded Trees' tab.</p>
+              <canvas ref="plotCanvas" class="plot-canvas w-full rounded-md" @click="handleCanvasClick"></canvas>
+            </div>
+
+            <!-- Recorded Trees Tab Content -->
+            <div v-if="activeTab === 'list'" class="bg-white p-4 rounded-lg shadow">
+              <h2 class="text-xl font-semibold mb-2">Recorded Trees</h2>
+              <ul class="space-y-2 max-h-[60vh] overflow-y-auto">
+                <li v-if="trees.length === 0" class="text-center text-gray-500 py-8">No trees recorded for this plot yet.</li>
+                <li v-for="tree in sortedTrees" :key="tree.id" class="bg-gray-50 rounded-lg shadow-sm">
+                  <div @click="selectTreeForEditing(tree)" class="p-3 cursor-pointer flex justify-between items-center" :class="editingTreeId === tree.id ? 'bg-lime-200 rounded-t-lg' : 'hover:bg-gray-100 rounded-lg'">
+                    <div><p class="font-bold">Tree #{{ tree.treeNumber }}</p><p class="text-sm text-gray-600">{{ tree.species || 'No species' }} - {{ tree.diameter || 'N/A' }} in</p></div>
+                    <div class="flex items-center space-x-2">
+                      <button @click.stop="deleteTree(tree.id)" class="text-red-500 hover:text-red-700 p-1 rounded-full">
+                        <i class="pi pi-trash h-4 w-4"></i>
+                      </button>
+                      <i :class="editingTreeId === tree.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" class="h-5 w-5 text-gray-500"></i>
+                    </div>
+                  </div>
+                  <TreeEditForm v-if="editingTreeId === tree.id" :tree="tree" :status_list="status_list" @save="handleSaveTree" @cancel="editingTreeId = null"/>
+                </li>
+              </ul>
+            </div>
           </div>
+          <div v-else class="text-center text-gray-500 py-8">Loading plot data...</div>
         </div>
-        <div v-else class="text-center text-gray-500 py-8">Loading plot data...</div>
       `,
       setup() {
         const route = useRoute(); // Access current route information
@@ -556,7 +721,6 @@
         const trees = ref([]); // Reactive reference for trees in the plot
         const plotCanvas = ref(null); // Reactive reference for the canvas element
         const editingTreeId = ref(null); // Reactive reference to track which tree is being edited
-        const azimuthForm = reactive({ distance: null, azimuth: null }); // Reactive object for azimuth/distance input form
         const confirmInfo = reactive({ show: false, treeId: null }); // Reactive object for confirmation modal state
         const activeTab = ref('map'); // Reactive reference for the active tab ('map' or 'list')
 
@@ -568,6 +732,34 @@
 
         // Computed property to determine the next available tree number
         const nextTreeNumber = computed(() => trees.value.length === 0 ? 1 : Math.max(...trees.value.map(t => t.treeNumber)) + 1);
+
+        // Get the previous tree record for default values
+        const previousTree = computed(() => {
+          return trees.value.length > 0 ? trees.value[trees.value.length - 1] : { form_pnt: { value: 0 } };
+        });
+
+        // azimuthForm gets default values from previousTree if available
+        const azimuthForm = reactive({
+          distance: null,
+          azimuth: null,
+          sample_code: computed(() => previousTree.value.sample_code || ''),
+          status: computed(() => previousTree.value.status || ''),
+          species: computed(() => previousTree.value.species || ''),
+          dbh: computed(() => previousTree.value.diameter || null)
+        });
+        // When switching to map tab or after adding, reset azimuthForm to new defaults
+        function resetAzimuthForm() {
+          azimuthForm.distance = null;
+          azimuthForm.azimuth = null;
+          azimuthForm.sample_code = previousTree.value.sample_code || '';
+          azimuthForm.status = previousTree.value.status || '';
+          azimuthForm.species = previousTree.value.species || '';
+          azimuthForm.dbh = previousTree.value.diameter || null;
+        }
+        watch([activeTab, trees], () => {
+          if (activeTab.value === 'map') resetAzimuthForm();
+        });
+
         // Computed property for sorted trees (by treeNumber)
         const sortedTrees = computed(() => [...trees.value].sort((a, b) => a.treeNumber - b.treeNumber));
 
@@ -648,14 +840,22 @@
 
         // Function to create a new tree record
         async function createNewTree(x, y, azimuth = null, distance = null) {
+          console.log('Creating new tree at:', { x, y, azimuth, distance });
+          console.log('Previous tree data:', previousTree);
           const newTree = {
             id: uuid(),
             plotId: plotId,
             treeNumber: nextTreeNumber.value,
-            species: '',
+            species: previousTree.value.species || '',
             status: 'Live',
             diameter: null,
-            height: null,
+            count: 1,
+            sample_code: previousTree.value.sample_code || '',
+            form_pnt: previousTree.value.form_pnt || 0,
+            form_factor: null,
+            bole_diam: null,
+            bole_height: null,
+            total_height: null,
             notes: '',
             x, y,
             azimuth, distance,
@@ -766,9 +966,34 @@
           azimuthForm.azimuth = null;
         }
 
+        // Breadcrumbs for PlotObservation
+        // Query the project object associated with the current plot
+        const project = ref({});
+        onMounted(async () => {
+          if (plot.value.projectId) {
+            project.value = await db.projects.get(plot.value.projectId) || {};
+          }
+        });
+        watch(() => plot.value.projectId, async (newProjectId) => {
+          if (newProjectId) {
+            project.value = await db.projects.get(newProjectId) || {};
+          }
+        });
+
+        const breadcrumbs = computed(() => [
+          { label: 'Projects', to: '/' },
+          { label: project.value.name || 'Project', to: `/project/${plot.value.projectId}/plots` },
+          { label: `Plot #${plot.value.plotNumber || ''}` }
+        ]);
+
+        function importProject(e) {
+          // Optionally, you can emit or handle import here
+        }
+
         return {
-          plot, trees, sortedTrees, plotCanvas, handleCanvasClick, selectTreeForEditing, handleSaveTree, deleteTree,
-          nextTreeNumber, azimuthForm, addTreeByAzimuth, confirmInfo, handleDeleteConfirm, activeTab, editingTreeId
+          plot, trees, status_list, sortedTrees, plotCanvas, handleCanvasClick, selectTreeForEditing, handleSaveTree, deleteTree,
+          nextTreeNumber, azimuthForm, addTreeByAzimuth, confirmInfo, handleDeleteConfirm, activeTab, editingTreeId,
+          breadcrumbs, importProject
         };
       }
     };
@@ -792,6 +1017,9 @@
     const app = createApp({ template: '<router-view></router-view>' });
     app.use(router);
 
+    // Register router-link globally so it works in all templates
+    app.component('router-link', VueRouter.RouterLink);
+
     // Mount the Vue application to the '#app' div
     app.mount('#app');
 
@@ -810,6 +1038,7 @@
     } else if ('serviceWorker' in navigator) {
        console.warn('Service Worker not registered. To enable offline PWA features, please serve this HTML file over a local server (http://localhost) or HTTPS.');
     }
+
   </script>
 </body>
 </html>
