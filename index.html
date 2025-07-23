@@ -596,11 +596,13 @@
 
         // Function to update plot details in IndexedDB
         async function updatePlot(plot) {
-          const { id, slope, aspect, elevation } = plot;
+          const { id, slope, aspect, elevation, planned_latitude, planned_longitude } = plot;
           await db.plots.update(id, {
             slope,
             aspect,
             elevation,
+            planned_latitude,
+            planned_longitude,
             lastUpdated: new Date().toISOString(),
             updatedBy: currentUser.username
           });
