@@ -627,7 +627,10 @@
     // --- COMPONENT: Tree Edit Form (Embedded) ---
     // A form for editing individual tree details. Used within PlotObservation.
     const TreeEditForm = {
-      props: ['tree', 'design_code_list', 'status_list', 'species_list','bole_diam_codes'],
+      props: [
+        'tree', 'design_code_list', 'status_list', 'species_list',
+        'bole_diam_codes','crown_position_list','vigor_list','damage_list'
+      ],
       emits: ['save', 'cancel', 'delete'],
       template: `
         <div class="bg-lime-100 p-4 rounded-b-md -mt-2 relative">
@@ -646,9 +649,9 @@
               </div>
           </div>
 
-          <!--<h4 class="font-semibold text-teal-800 mb-2">Editing Tree #{{ localTree.treeNumber }}</h4>-->
-          <form @submit.prevent="saveTree" class="space-y-4">
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+          <!--Update tree-->
+          <form @submit.prevent="saveTree" class="space-y-4 mr-6">
+            <div class="grid grid-cols-5 md:grid-cols-7 lg:grid-cols-11 gap-4 items-end mt-2">
               <div>
                 <label class="block text-sm font-medium text-gray-700">Sample Code</label>
                 <select v-model="localTree.design_code" class="input-field w-20" required>
@@ -685,7 +688,6 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Bole Diam</label>
-                <!--<input v-model.number="localTree.bole_diam" type="text" step="0.1" placeholder="e.g., F" class="input-field w-20 px-1">-->
                 <select v-model="localTree.bole_diam" class="input-field w-20">
                   <option v-for="code in bole_diam_codes" :key="code" :value="code">{{ code }}</option>
                 </select>
@@ -703,8 +705,10 @@
                 <input v-model.number="localTree.bh_age" type="number" step="1.0" placeholder="e.g., 42" class="input-field w-20 px-1">
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Crown Position</label>
-                <input v-model="localTree.crown_position" type="text" placeholder="e.g., C" class="input-field w-20 px-1">
+                <label class="block text-sm font-medium text-gray-700">Crown Pos.</label>
+                <select v-model="localTree.crown_position" class="input-field w-20">
+                  <option v-for="code in crown_position_list" :key="code" :value="code">{{ code }}</option>
+                </select>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Crown Ratio</label>
@@ -712,18 +716,22 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Vigor</label>
-                <input v-model="localTree.vigor" type="text" placeholder="e.g., H" class="input-field w-20 px-1">
+                <select v-model="localTree.vigor" class="input-field w-20">
+                  <option v-for="code in vigor_list" :key="code" :value="code">{{ code }}</option>
+                </select>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Damage</label>
-                <input v-model="localTree.damage" type="text" placeholder="e.g., A" class="input-field w-20 px-1">
+                <select v-model="localTree.damage" class="input-field w-20">
+                  <option v-for="code in damage_list" :key="code" :value="code">{{ code }}</option>
+                </select>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Azimuth (°)</label>
                 <input v-model.number="localTree.azimuth" type="number" step="0.1" class="input-field w-20 px-1">
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Distance (m)</label>
+                <label class="block text-sm font-medium text-gray-700">Distance (ft)</label>
                 <input v-model.number="localTree.distance" type="number" step="0.1" class="input-field w-20 px-1">
               </div>
             </div>
@@ -733,7 +741,7 @@
             </div>
             <div class="pt-2 flex justify-end">
               <button type="submit" class="btn btn-primary">
-                <i class="pi pi-save h-5 w-5 mr-2"></i> Save Changes
+                <i class="pi pi-save h-5 w-5 mr-2"></i> Update
               </button>
             </div>
           </form>
@@ -783,10 +791,13 @@
       }
     };
 
-    // --- NEW COMPONENT: TreeTable ---
+    // --- TreeTable Component ---
     // A compact table for creating, updating, and deleting tree records.
     const TreeTable = {
-      props: ['trees', 'design_code_list', 'status_list', 'species_list'],
+      props: [
+        'trees', 'design_code_list', 'status_list', 'species_list',
+        'bole_diam_codes','crown_position_list','vigor_list','damage_list'
+      ],
       emits: ['create-tree', 'update-tree', 'delete-tree'],
       template: `
         <div class="bg-white p-4 rounded-lg shadow overflow-x-auto">
@@ -795,10 +806,20 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Species</th>
-                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PF</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sp</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stat</th>
                         <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DBH</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FP</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FF</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BD</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BHT</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">THT</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Age</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CP</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CR</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vig</th>
+                        <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dmg</th>
                         <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Azimuth</th>
                         <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dist</th>
                         <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -827,15 +848,63 @@
                         </td>
                         <td class="px-2 py-2 whitespace-nowrap text-sm">
                             <span v-if="!isEditing(tree.id)">{{ tree.diameter }}</span>
-                            <input v-else v-model.number="editingTree.diameter" type="number" class="table-input w-20">
+                            <input v-else v-model.number="editingTree.diameter" type="number" class="table-input w-12">
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm">
+                            <span v-if="!isEditing(tree.id)">{{ tree.form_point }}</span>
+                            <input v-else v-model.number="editingTree.form_point" type="number" class="table-input w-10">
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm">
+                            <span v-if="!isEditing(tree.id)">{{ tree.form_factor }}</span>
+                            <input v-else v-model.number="editingTree.form_factor" type="number" class="table-input w-12">
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm">
+                            <span v-if="!isEditing(tree.id)">{{ tree.bole_diam }}</span>
+                            <select v-else v-model="editingTree.bole_diam" class="table-input">
+                                <option v-for="st in bole_diam_codes" :key="st" :value="st">{{ st }}</option>
+                            </select>
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm">
+                            <span v-if="!isEditing(tree.id)">{{ tree.bole_height }}</span>
+                            <input v-else v-model.number="editingTree.bole_height" type="number" class="table-input w-14">
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm">
+                            <span v-if="!isEditing(tree.id)">{{ tree.total_height }}</span>
+                            <input v-else v-model.number="editingTree.total_height" type="number" class="table-input w-14">
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm">
+                            <span v-if="!isEditing(tree.id)">{{ tree.age }}</span>
+                            <input v-else v-model.number="editingTree.age" type="number" class="table-input w-12">
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm">
+                            <span v-if="!isEditing(tree.id)">{{ tree.crown_position }}</span>
+                            <select v-else v-model="editingTree.crown_position" class="table-input">
+                                <option v-for="st in crown_position_list" :key="st" :value="st">{{ st }}</option>
+                            </select>
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm">
+                            <span v-if="!isEditing(tree.id)">{{ tree.crown_ratio }}</span>
+                            <input v-else v-model.number="editingTree.crown_ratio" type="number" class="table-input w-12">
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm">
+                            <span v-if="!isEditing(tree.id)">{{ tree.vigor }}</span>
+                            <select v-else v-model="editingTree.vigor" class="table-input">
+                                <option v-for="st in vigor_list" :key="st" :value="st">{{ st }}</option>
+                            </select>
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm">
+                            <span v-if="!isEditing(tree.id)">{{ tree.damage }}</span>
+                            <select v-else v-model="editingTree.damage" class="table-input">
+                                <option v-for="st in damage_list" :key="st" :value="st">{{ st }}</option>
+                            </select>
                         </td>
                         <td class="px-2 py-2 whitespace-nowrap text-sm">
                             <span v-if="!isEditing(tree.id)">{{ tree.azimuth }}</span>
-                            <input v-else v-model.number="editingTree.azimuth" type="number" class="table-input w-20">
+                            <input v-else v-model.number="editingTree.azimuth" type="number" class="table-input w-14">
                         </td>
                         <td class="px-2 py-2 whitespace-nowrap text-sm">
                             <span v-if="!isEditing(tree.id)">{{ tree.distance }}</span>
-                            <input v-else v-model.number="editingTree.distance" type="number" class="table-input w-20">
+                            <input v-else v-model.number="editingTree.distance" type="number" class="table-input w-14">
                         </td>
                         <td class="px-2 py-2 whitespace-nowrap text-sm font-medium">
                             <div v-if="isEditing(tree.id)" class="flex items-center space-x-2">
@@ -930,61 +999,22 @@
             <!-- Tabs for Tree Map and Recorded Trees -->
             <div class="mb-4 border-b border-gray-200">
               <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                <button @click="activeTab = 'map'" :class="[activeTab === 'map' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">Tree Map</button>
                 <button @click="activeTab = 'list'" :class="[activeTab === 'list' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">Recorded Trees ({{ trees.length }})</button>
                 <button @click="activeTab = 'table'" :class="[activeTab === 'table' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">Tree Table</button>
+                <button @click="activeTab = 'map'" :class="[activeTab === 'map' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">Tree Map</button>
               </nav>
             </div>
 
             <!-- Tree Map Tab Content -->
             <div v-show="activeTab === 'map'" class="bg-white p-4 rounded-lg shadow">
-              <h2 class="text-xl font-semibold mb-2">Tree Entry</h2>
-              <div class="bg-lime-100 mb-4 p-4 border border-gray-200 rounded-md">
-                <form @submit.prevent="addTreeByAzimuth" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-9 gap-4 items-end">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">Sample Code</label>
-                    <input v-model="treeAddForm.design_code" type="text" class="input-field w-20" required>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">Species</label>
-                    <input v-model="treeAddForm.species" type="text" class="input-field w-20" required>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">Status</label>
-                    <input v-model="treeAddForm.status" type="text" class="input-field w-20" required>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">Count</label>
-                    <input v-model="treeAddForm.count" type="number" class="input-field w-20" required>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">DBH (in)</label>
-                    <input v-model.number="treeAddForm.dbh" type="number" step="0.1" class="input-field w-20" required>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">Form Pt</label>
-                    <input v-model.number="treeAddForm.form_point" type="number" step="0.1" class="input-field w-20" required>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">Azimuth (°)</label>
-                    <input v-model.number="treeAddForm.azimuth" type="number" step="0.1" class="input-field w-20" required>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">Distance (m)</label>
-                    <input v-model.number="treeAddForm.distance" type="number" step="0.1" class="input-field w-20" required>
-                  </div>
-                  <button type="submit" class="btn btn-secondary">
-                    <i class="pi pi-plus h-5 w-5 mr-2"></i> Add
-                  </button>
-                </form>
-              </div>
-              <p class="text-sm text-gray-500 mb-2">Or, tap on the canvas below to add a tree visually. A new tree will be created and can be edited in the 'Recorded Trees' tab.</p>
+              <h2 class="text-xl font-semibold mb-2">Visual Tree Entry</h2>
+              <p class="text-sm text-gray-500 mb-2">Tap on the canvas below to add a tree visually. A new tree will be created and can be edited in the 'Recorded Trees' tab.</p>
               <canvas ref="plotCanvas" class="plot-canvas w-full rounded-md" @click="handleCanvasClick"></canvas>
             </div>
 
             <!-- Recorded Trees Tab Content -->
             <div v-if="activeTab === 'list'" class="bg-white p-4 rounded-lg shadow">
-              <h2 class="text-xl font-semibold mb-2">Recorded Trees</h2>
+              <h2 class="text-xl font-semibold mb-2 mt-4">Recorded Trees</h2>
               <ul class="space-y-2 max-h-[60vh] overflow-y-auto">
                 <li v-if="trees.length === 0" class="text-center text-gray-500 py-8">No trees recorded for this plot yet.</li>
                 <li v-for="tree in sortedTrees" :key="tree.id" class="bg-gray-50 rounded-lg shadow-sm">
@@ -1001,12 +1031,119 @@
                     :status_list="status_list"
                     :species_list="species_list"
                     :bole_diam_codes="bole_diam_codes"
+                    :crown_position_list="crown_position_list"
+                    :vigor_list="vigor_list"
+                    :damage_list="damage_list"
                     @delete="handleDeleteTree"
                     @save="handleSaveTree"
                     @cancel="editingTreeId = null"
                   />
                 </li>
               </ul>
+
+              <!-- New Tree Form -->
+              <div class="bg-lime-100 mb-4 p-4 border border-gray-200 rounded-md">
+                <h2 class="text-xl font-semibold mb-2">New Tree</h2>
+                <form @submit.prevent="addTreeByAzimuth" class="grid grid-cols-5 md:grid-cols-7 lg:grid-cols-11 gap-4 items-end mt-2 mr-6">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Sample Code</label>
+                    <select v-model="treeAddForm.design_code" class="input-field w-20" required>
+                      <option disabled value="">Select</option>
+                      <option v-for="code in design_code_list" :key="code" :value="code">{{ code }}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Species</label>
+                    <select v-model="treeAddForm.species" class="input-field w-20" required>
+                      <option disabled value="">Select</option>
+                      <option v-for="code in species_list" :key="code" :value="code">{{ code }}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Status</label>
+                    <select v-model="treeAddForm.status" class="input-field w-20" required>
+                      <option disabled value="">Select</option>
+                      <option v-for="code in status_list" :key="code" :value="code">{{ code }}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Count</label>
+                    <input v-model="treeAddForm.count" type="number" class="input-field w-20 px-1" required>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">DBH (in)</label>
+                    <input v-model.number="treeAddForm.dbh" type="number" step="0.1" class="input-field w-20 px-1" required>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Form Point</label>
+                    <input v-model.number="treeAddForm.form_point" type="number" step="0.1" class="input-field w-20 px-1" required>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Form Factor</label>
+                    <input v-model.number="treeAddForm.form_factor" type="number" step="0.1" placeholder="e.g., 85.2" class="input-field w-20 px-1">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Bole Diam</label>
+                    <select v-model="treeAddForm.bole_diam" class="input-field w-20">
+                      <option v-for="code in bole_diam_codes" :key="code" :value="code">{{ code }}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Bole Ht.</label>
+                    <input v-model.number="treeAddForm.bole_height" type="number" step="0.1" placeholder="e.g., 99" class="input-field w-20 px-1">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Total Ht.</label>
+                    <input v-model.number="treeAddForm.total_height" type="number" step="0.1" placeholder="e.g., 120.5" class="input-field w-20 px-1">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Breast Ht. Age</label>
+                    <input v-model.number="treeAddForm.bh_age" type="number" step="1.0" placeholder="e.g., 42" class="input-field w-20 px-1">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Crown Pos.</label>
+                    <select v-model="treeAddForm.crown_position" class="input-field w-20">
+                      <option v-for="code in crown_position_list" :key="code" :value="code">{{ code }}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Crown Ratio</label>
+                    <input v-model.number="treeAddForm.crown_ratio" type="number" step="1.0" placeholder="e.g., 20" class="input-field w-20 px-1">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Vigor</label>
+                    <select v-model="treeAddForm.vigor" class="input-field w-20">
+                      <option v-for="code in vigor_list" :key="code" :value="code">{{ code }}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Damage</label>
+                    <select v-model="treeAddForm.damage" class="input-field w-20">
+                      <option v-for="code in damage_list" :key="code" :value="code">{{ code }}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Azimuth (°)</label>
+                    <input v-model.number="treeAddForm.azimuth" type="number" step="0.1" class="input-field w-20 px-1" required>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Distance (ft)</label>
+                    <input v-model.number="treeAddForm.distance" type="number" step="0.1" class="input-field w-20 px-1" required>
+                  </div>
+                  <div class="col-span-full mt-4">
+                    <label class="block text-sm font-medium text-gray-700">Notes</label>
+                    <textarea v-model="treeAddForm.notes" placeholder="Any additional notes..." class="input-field w-full px-1" rows="1"></textarea>
+                  </div>
+                  <!--<button type="submit" class="btn btn-secondary">
+                    <i class="pi pi-plus h-5 w-5 mr-2"></i> Add
+                  </button>-->
+                  <div class="pt-2 flex justify-end">
+                    <button type="submit" class="btn btn-primary">
+                      <i class="pi pi-save h-5 w-5 mr-2"></i> Save
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
 
             <!-- Tree Table Tab Content -->
@@ -1017,6 +1154,9 @@
                   :status_list="status_list"
                   :species_list="species_list"
                   :bole_diam_codes="bole_diam_codes"
+                  :crown_position_list="crown_position_list"
+                  :vigor_list="vigor_list"
+                  :damage_list="damage_list"
                   @create-tree="handleCreateTable"
                   @update-tree="handleSaveTree"
                   @delete-tree="handleDeleteTree"
@@ -1035,7 +1175,7 @@
         const plotCanvas = ref(null); // Reactive reference for the canvas element
         const editingTreeId = ref(null); // Reactive reference to track which tree is being edited
         const confirmInfo = reactive({ show: false, treeId: null }); // Reactive object for confirmation modal state
-        const activeTab = ref('map'); // Reactive reference for the active tab ('map' or 'list' or 'table')
+        const activeTab = ref('list'); // Reactive reference for the active tab ('map' or 'list' or 'table')
 
         // Inject the globally provided showAbout function
         const showAbout = inject('showAbout');
@@ -1067,7 +1207,7 @@
           form_point: 4
         });
 
-        // When switching to map tab or after adding, reset treeAddForm to new defaults
+        // When switching to the list tab or after adding/deleting, reset treeAddForm to new defaults
         function resettreeAddForm() {
           treeAddForm.distance = null;
           treeAddForm.azimuth = null;
@@ -1080,7 +1220,7 @@
           treeAddForm.form_point = previousTree.value.form_pnt || 4;
         }
         watch([activeTab, trees], () => {
-          if (activeTab.value === 'map') resettreeAddForm();
+          if (activeTab.value === 'list') resettreeAddForm();
         }, { immediate: true });
 
         // Computed property for sorted trees (by treeNumber)
@@ -1322,7 +1462,8 @@
         }
 
         return {
-          plot, trees, design_code_list, status_list, species_list, bole_diam_codes, sortedTrees, plotCanvas, handleCanvasClick, selectTreeForEditing, handleSaveTree, handleDeleteTree,
+          plot, trees, design_code_list, status_list, species_list, bole_diam_codes, crown_position_list, vigor_list, damage_list,
+          sortedTrees, plotCanvas, handleCanvasClick, selectTreeForEditing, handleSaveTree, handleDeleteTree,
           nextTreeNumber, treeAddForm, addTreeByAzimuth, confirmInfo, handleDeleteConfirm, activeTab, editingTreeId,
           breadcrumbs, importProject, showAbout, handleCreateTable
         };
