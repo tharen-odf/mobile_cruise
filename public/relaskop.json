@@ -1,0 +1,154 @@
+{
+  "american_scale":
+  {
+  "metadata":
+    {
+      "comment": "This table describes the basal area factors available when using an American scale Spiegel-Relaskop.",
+    },
+
+  "data":
+  [
+  {
+
+    "from_left": "0 to 10",
+    "num_bars": "0",
+    "basal_area_factor": "10.00",
+    "plot_radius_factor": "2.750",
+    "limiting_dist_face": "2.708"
+  },
+  {
+    "from_left": "20 to a",
+    "num_bars": "3",
+    "basal_area_factor": "11.79",
+    "plot_radius_factor": "2.533",
+    "limiting_dist_face": "2.491"
+  },
+  {
+    "from_left": "10 to a",
+    "num_bars": "1",
+    "basal_area_factor": "13.61",
+    "plot_radius_factor": "2.357",
+    "limiting_dist_face": "2.315"
+  },
+  {
+    "from_left": "20 to a",
+    "num_bars": "4",
+    "basal_area_factor": "15.69",
+    "plot_radius_factor": "2.196",
+    "limiting_dist_face": "2.154"
+  },
+  {
+    "from_left": "10 to a",
+    "num_bars": "2",
+    "basal_area_factor": "17.78",
+    "plot_radius_factor": "2.062",
+    "limiting_dist_face": "2.021"
+  },
+  {
+    "from_left": "0 to 20",
+    "num_bars": "0",
+    "basal_area_factor": "20.00",
+    "plot_radius_factor": "1.944",
+    "limiting_dist_face": "1.903"
+  },
+  {
+    "from_left": "10 to a",
+    "num_bars": "3",
+    "basal_area_factor": "22.50",
+    "plot_radius_factor": "1.833",
+    "limiting_dist_face": "1.792"
+  },
+  {
+    "from_left": "20 to a",
+    "num_bars": "6",
+    "basal_area_factor": "25.15",
+    "plot_radius_factor": "1.734",
+    "limiting_dist_face": "1.692"
+  },
+  {
+    "from_left": "10 to a",
+    "num_bars": "4",
+    "basal_area_factor": "27.78",
+    "plot_radius_factor": "1.650",
+    "limiting_dist_face": "1.608"
+  },
+  {
+    "from_left": "10 to a",
+    "num_bars": "5",
+    "basal_area_factor": "33.61",
+    "plot_radius_factor": "1.500",
+    "limiting_dist_face": "1.458"
+  },
+  {
+    "from_left": "0 to a",
+    "num_bars": "0",
+    "basal_area_factor": "40.00",
+    "plot_radius_factor": "1.375",
+    "limiting_dist_face": "1.333"
+  },
+  {
+    "from_left": "0 to a",
+    "num_bars": "1",
+    "basal_area_factor": "46.94",
+    "plot_radius_factor": "1.269",
+    "limiting_dist_face": "1.228"
+  },
+  {
+    "from_left": "0 to a",
+    "num_bars": "2",
+    "basal_area_factor": "54.44",
+    "plot_radius_factor": "1.179",
+    "limiting_dist_face": "1.137"
+  },
+  {
+    "from_left": "0 to a",
+    "num_bars": "3",
+    "basal_area_factor": "62.50",
+    "plot_radius_factor": "1.100",
+    "limiting_dist_face": "1.058"
+  },
+  {
+    "from_left": "0 to a",
+    "num_bars": "4",
+    "basal_area_factor": "71.11",
+    "plot_radius_factor": "1.031",
+    "limiting_dist_face": "0.990"
+  },
+  {
+    "from_left": "0 to a",
+    "num_bars": "5",
+    "basal_area_factor": "80.28",
+    "plot_radius_factor": "0.971",
+    "limiting_dist_face": "0.929"
+  },
+  {
+    "from_left": "0 to b",
+    "num_bars": "0",
+    "basal_area_factor": "90.00",
+    "plot_radius_factor": "0.917",
+    "limiting_dist_face": "0.875"
+  },
+  {
+    "from_left": "10 to c",
+    "num_bars": "-",
+    "basal_area_factor": "160.00",
+    "plot_radius_factor": "0.687",
+    "limiting_dist_face": "0.646"
+  },
+  {
+    "from_left": "10 to c",
+    "num_bars": "-",
+    "basal_area_factor": "250.00",
+    "plot_radius_factor": "0.550",
+    "limiting_dist_face": "0.508"
+  },
+  {
+    "from_left": "0 to d",
+    "num_bars": "-",
+    "basal_area_factor": "360.00",
+    "plot_radius_factor": "0.458",
+    "limiting_dist_face": "0.417"
+  }
+  ]
+}
+}

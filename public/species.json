@@ -1,0 +1,432 @@
+{
+  "oregon_west":
+  {
+    "metadata":
+    {
+      "description": "Species commonly found in western Oregon."
+    },
+    "data":
+    [
+      {
+          "spp_code": "DF",
+          "fia_code": 202,
+          "plants_code": null,
+          "common_name": "Douglas-fir",
+          "behres_ao": 0.505,
+          "bark_factor": 0.92,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "RA",
+          "fia_code": 351,
+          "plants_code": null,
+          "common_name": "Red Alder",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.37
+      },
+      {
+          "spp_code": "WH",
+          "fia_code": 263,
+          "plants_code": null,
+          "common_name": "Western Hemlock",
+          "behres_ao": 0.532,
+          "bark_factor": 0.944,
+          "form_factor": 87,
+          "specific_gravity": 0.47
+      },
+      {
+          "spp_code": "PP",
+          "fia_code": 122,
+          "plants_code": null,
+          "common_name": "Ponderosa Pine",
+          "behres_ao": 0.378,
+          "bark_factor": 0.87,
+          "form_factor": 87,
+          "specific_gravity": 0.43
+      },
+      {
+          "spp_code": "BM",
+          "fia_code": 312,
+          "plants_code": null,
+          "common_name": "Bigleaf Maple",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 80,
+          "specific_gravity": 0.55
+      },
+      {
+          "spp_code": "LP",
+          "fia_code": 108,
+          "plants_code": null,
+          "common_name": "Lodgepole Pine",
+          "behres_ao": 0.505,
+          "bark_factor": 0.96,
+          "form_factor": 87,
+          "specific_gravity": 0.46
+      },
+      {
+          "spp_code": "SS",
+          "fia_code": 98,
+          "plants_code": null,
+          "common_name": "Sitka Spruce",
+          "behres_ao": 0.491,
+          "bark_factor": 0.962,
+          "form_factor": 87,
+          "specific_gravity": 0.43
+      },
+      {
+          "spp_code": "R4",
+          "fia_code": 6918,
+          "plants_code": null,
+          "common_name": "Cascara",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "WF",
+          "fia_code": 15,
+          "plants_code": null,
+          "common_name": "White Fir",
+          "behres_ao": 0.491,
+          "bark_factor": 0.962,
+          "form_factor": 87,
+          "specific_gravity": 0.43
+      },
+      {
+          "spp_code": "RC",
+          "fia_code": 242,
+          "plants_code": null,
+          "common_name": "Western Red Cedar",
+          "behres_ao": 0.491,
+          "bark_factor": 0.951,
+          "form_factor": 80,
+          "specific_gravity": 0.36
+      },
+      {
+          "spp_code": "NF",
+          "fia_code": 22,
+          "plants_code": null,
+          "common_name": "Noble Fir",
+          "behres_ao": 0.491,
+          "bark_factor": 0.924,
+          "form_factor": 87,
+          "specific_gravity": 0.43
+      },
+      {
+          "spp_code": "CH",
+          "fia_code": 768,
+          "plants_code": null,
+          "common_name": "Cherry",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "PM",
+          "fia_code": 361,
+          "plants_code": null,
+          "common_name": "Pacific Madrone",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "TO",
+          "fia_code": 431,
+          "plants_code": null,
+          "common_name": "Tanoak",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "IC",
+          "fia_code": 81,
+          "plants_code": null,
+          "common_name": "Incense Cedar",
+          "behres_ao": 0.491,
+          "bark_factor": 0.951,
+          "form_factor": 87,
+          "specific_gravity": 0.36
+      },
+      {
+          "spp_code": "SP",
+          "fia_code": 117,
+          "plants_code": null,
+          "common_name": "Sugar Pine",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.43
+      },
+      {
+          "spp_code": "GC",
+          "fia_code": 731,
+          "plants_code": null,
+          "common_name": "Golden Chinkapin",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "LO",
+          "fia_code": 805,
+          "plants_code": null,
+          "common_name": "Canyon Live Oak",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "SF",
+          "fia_code": 11,
+          "plants_code": null,
+          "common_name": "Pacific Silver Fir",
+          "behres_ao": 0.491,
+          "bark_factor": 0.94,
+          "form_factor": 87,
+          "specific_gravity": 0.43
+      },
+      {
+          "spp_code": "GF",
+          "fia_code": 17,
+          "plants_code": null,
+          "common_name": "Grand Fir",
+          "behres_ao": 0.491,
+          "bark_factor": 0.94,
+          "form_factor": 87,
+          "specific_gravity": 0.43
+      },
+      {
+          "spp_code": "CL",
+          "fia_code": 981,
+          "plants_code": null,
+          "common_name": "Oregon Myrtle",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "WI",
+          "fia_code": 920,
+          "plants_code": null,
+          "common_name": "Willow",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "WJ",
+          "fia_code": 64,
+          "plants_code": null,
+          "common_name": "Western Juniper",
+          "behres_ao": 0.505,
+          "bark_factor": 0.92,
+          "form_factor": 87,
+          "specific_gravity": 0.36
+      },
+      {
+          "spp_code": "PY",
+          "fia_code": 231,
+          "plants_code": null,
+          "common_name": "Pacific Yew",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "PD",
+          "fia_code": 492,
+          "plants_code": null,
+          "common_name": "Pacific Dogwood",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "RF",
+          "fia_code": 20,
+          "plants_code": null,
+          "common_name": "Shasta Red Fir",
+          "behres_ao": 0.505,
+          "bark_factor": 0.94,
+          "form_factor": 87,
+          "specific_gravity": 0.43
+      },
+      {
+          "spp_code": "WP",
+          "fia_code": 119,
+          "plants_code": null,
+          "common_name": "Western White Pine",
+          "behres_ao": 0.505,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.4
+      },
+      {
+          "spp_code": "BO",
+          "fia_code": 815,
+          "plants_code": null,
+          "common_name": "California Blackoak",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "QA",
+          "fia_code": 746,
+          "plants_code": null,
+          "common_name": "Quaking Aspen",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "PC",
+          "fia_code": 41,
+          "plants_code": null,
+          "common_name": "Port Orford Cedar",
+          "behres_ao": 0.505,
+          "bark_factor": 0.951,
+          "form_factor": 87,
+          "specific_gravity": 0.36
+      },
+      {
+          "spp_code": "MH",
+          "fia_code": 264,
+          "plants_code": null,
+          "common_name": "Mountain Hemlock",
+          "behres_ao": 0.532,
+          "bark_factor": 0.944,
+          "form_factor": 87,
+          "specific_gravity": 0.47
+      },
+      {
+          "spp_code": "XX",
+          "fia_code": 999,
+          "plants_code": null,
+          "common_name": "Other / Unknown",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "BC",
+          "fia_code": 747,
+          "plants_code": null,
+          "common_name": "Black Cottonwood",
+          "behres_ao": 0.545,
+          "bark_factor": 0.94,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "JP",
+          "fia_code": 116,
+          "plants_code": null,
+          "common_name": "Jeffrey Pine",
+          "behres_ao": 0.505,
+          "bark_factor": 0.87,
+          "form_factor": 87,
+          "specific_gravity": 0.46
+      },
+      {
+          "spp_code": "RW",
+          "fia_code": 211,
+          "plants_code": null,
+          "common_name": "Redwood",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.4
+      },
+      {
+          "spp_code": "WO",
+          "fia_code": 815,
+          "plants_code": null,
+          "common_name": "Oregon White Oak",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "OA",
+          "fia_code": 542,
+          "plants_code": null,
+          "common_name": "Oregon Ash",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "CX",
+          "fia_code": 299,
+          "plants_code": null,
+          "common_name": "Misc. Conifers",
+          "behres_ao": 0.505,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.43
+      },
+      {
+          "spp_code": "AC",
+          "fia_code": 42,
+          "plants_code": null,
+          "common_name": "Alaska Cedar",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 80,
+          "specific_gravity": 0.36
+      },
+      {
+          "spp_code": "ES",
+          "fia_code": 93,
+          "plants_code": null,
+          "common_name": "Engelmann Spruce",
+          "behres_ao": 0.491,
+          "bark_factor": 0.962,
+          "form_factor": 87,
+          "specific_gravity": 0.38
+      },
+      {
+          "spp_code": "WL",
+          "fia_code": 73,
+          "plants_code": null,
+          "common_name": "Western Larch",
+          "behres_ao": 0.505,
+          "bark_factor": 0.92,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      },
+      {
+          "spp_code": "HX",
+          "fia_code": 998,
+          "plants_code": null,
+          "common_name": "Misc. Hardwood",
+          "behres_ao": 0.545,
+          "bark_factor": 0.953,
+          "form_factor": 87,
+          "specific_gravity": 0.5
+      }
+    ]
+  }
+}
