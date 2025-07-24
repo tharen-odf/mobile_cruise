@@ -786,132 +786,133 @@
       ],
       emits: ['create-tree', 'update-tree', 'delete-tree'],
       template: `
-        <div class="bg-white p-2 rounded-md shadow overflow-x-auto">
-            <!--<h2 class="text-xl font-semibold mb-2">Tree Table</h2>-->
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-8">#</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-10">PF</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-12">Sp</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-14">Stat</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-10">DBH</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-8">FP</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-8">FF</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-10">BD</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-10">BHT</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-10">THT</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-10">Age</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-12">CP</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-10">CR</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-10">Vig</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-14">Dmg</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-10">Az</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-10">Dist</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-30">Notes</th>
-                        <th class="compact-th text-left text-xs font-medium text-gray-500 uppercase w-14">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    <tr v-for="tree in localTrees" :key="tree.id" @click="startEditing(tree)" class="hover:bg-lime-100 cursor-pointer py-0">
-                        <td class="compact-td whitespace-nowrap text-sm table-input w-8">{{ tree.treeNumber }}</td>
-                        <td class="compact-td whitespace-nowrap text-sm">
-                            <span v-if="!isEditing(tree.id)" class="table-input w-10">{{ tree.design_code }}</span>
-                            <select v-else v-model="editingTree.design_code" class="table-input w-10">
-                                <option v-for="val in design_code_list" :key="val" :value="val">{{ val }}</option>
-                            </select>
-                        </td>
-                        <td class="compact-td whitespace-nowrap text-sm">
-                            <span v-if="!isEditing(tree.id)" class="table-input w-12">{{ tree.species }}</span>
-                            <select v-else v-model="editingTree.species" class="table-input w-12">
-                                <option v-for="val in species_list" :key="val" :value="val">{{ val }}</option>
-                            </select>
-                        </td>
-                        <td class="compact-td whitespace-nowrap text-sm">
-                            <span v-if="!isEditing(tree.id)" class="table-input w-14">{{ tree.status }}</span>
-                            <select v-else v-model="editingTree.status" class="table-input w-14">
-                                <option v-for="val in status_list" :key="val" :value="val">{{ val }}</option>
-                            </select>
-                        </td>
-                        <td class="compact-td compact-td whitespace-nowrap text-sm">
-                            <span v-if="!isEditing(tree.id)" class="table-input w-10">{{ tree.diameter }}</span>
-                            <input v-else v-model.number="editingTree.diameter" type="number" class="table-input w-10">
-                        </td>
-                        <td class="compact-td compact-td whitespace-nowrap text-sm">
-                            <span v-if="!isEditing(tree.id)" class="table-input w-8">{{ tree.form_point }}</span>
-                            <input v-else v-model.number="editingTree.form_point" type="number" class="table-input w-8">
-                        </td>
-                        <td class="compact-td compact-td whitespace-nowrap text-sm">
-                            <span v-if="!isEditing(tree.id)" class="table-input w-8">{{ tree.form_factor }}</span>
-                            <input v-else v-model.number="editingTree.form_factor" type="number" class="table-input w-8">
-                        </td>
-                        <td class="compact-td compact-td whitespace-nowrap text-sm">
-                            <span v-if="!isEditing(tree.id)" class="table-input w-10">{{ tree.bole_diam }}</span>
-                            <select v-else v-model="editingTree.bole_diam" class="table-input w-10">
-                                <option v-for="val in bole_diam_codes" :key="val" :value="val">{{ val }}</option>
-                            </select>
-                        </td>
-                        <td class="compact-td compact-td whitespace-nowrap text-sm">
-                            <span v-if="!isEditing(tree.id)" class="table-input w-10">{{ tree.bole_height }}</span>
-                            <input v-else v-model.number="editingTree.bole_height" type="number" class="table-input w-10">
-                        </td>
-                        <td class="compact-td whitespace-nowrap text-sm">
-                            <span v-if="!isEditing(tree.id)" class="table-input w-10">{{ tree.total_height }}</span>
-                            <input v-else v-model.number="editingTree.total_height" type="number" class="table-input w-10">
-                        </td>
-                        <td class="compact-td whitespace-nowrap text-sm">
-                            <span v-if="!isEditing(tree.id)" class="table-input w-10">{{ tree.age }}</span>
-                            <input v-else v-model.number="editingTree.age" type="number" class="table-input w-10">
-                        </td>
-                        <td class="compact-td whitespace-nowrap text-sm">
-                            <span v-if="!isEditing(tree.id)" class="table-input w-14">{{ tree.crown_position }}</span>
-                            <select v-else v-model="editingTree.crown_position" class="table-input w-14">
-                                <option v-for="val in crown_position_list" :key="val" :value="val">{{ val }}</option>
-                            </select>
-                        </td>
-                        <td class="compact-td whitespace-nowrap text-sm">
-                            <span v-if="!isEditing(tree.id)" class="table-input w-10">{{ tree.crown_ratio }}</span>
-                            <select v-else v-model="editingTree.crown_ratio" class="table-input w-10">
-                                <option v-for="val in crown_ratio_list" :key="val" :value="val">{{ val }}</option>
-                            </select>
-                        </td>
-                        <td class="compact-td whitespace-nowrap text-sm">
-                            <span v-if="!isEditing(tree.id)" class="table-input w-10">{{ tree.vigor }}</span>
-                            <select v-else v-model="editingTree.vigor" class="table-input w-10">
-                                <option v-for="val in vigor_list" :key="val" :value="val">{{ val }}</option>
-                            </select>
-                        </td>
-                        <td class="compact-td whitespace-nowrap text-sm">
-                            <span v-if="!isEditing(tree.id)" class="table-input w-14">{{ tree.damage }}</span>
-                            <select v-else v-model="editingTree.damage" class="table-input w-14">
-                                <option v-for="val in damage_list" :key="val" :value="val">{{ val }}</option>
-                            </select>
-                        </td>
-                        <td class="compact-td whitespace-nowrap text-sm">
-                            <span v-if="!isEditing(tree.id)" class="table-input w-10">{{ tree.azimuth }}</span>
-                            <input v-else v-model.number="editingTree.azimuth" type="number" class="table-input w-10">
-                        </td>
-                        <td class="compact-td whitespace-nowrap text-sm">
-                            <span v-if="!isEditing(tree.id)" class="table-input w-10">{{ tree.distance }}</span>
-                            <input v-else v-model.number="editingTree.distance" type="number" class="table-input w-10">
-                        </td>
-                        <td class="compact-td text-sm max-w-30 truncate">
-                            <span v-if="!isEditing(tree.id)" class="table-input">{{ tree.notes }}</span>
-                            <input v-else v-model.number="editingTree.notes" type="text" class="table-input">
-                        </td>
-                        <td class="compact-td whitespace-nowrap text-sm font-medium">
-                            <div v-if="isEditing(tree.id)" class="flex items-center space-x-2">
-                                <button @click.stop="saveChanges" class="text-teal-600 hover:text-teal-900"><i class="pi pi-check"></i></button>
-                                <button @click.stop="cancelEditing" class="text-gray-600 hover:text-gray-900"><i class="pi pi-times"></i></button>
-                            </div>
-                            <button v-else @click.stop="$emit('delete-tree', tree.id)" class="text-red-600 hover:text-red-900"><i class="pi pi-trash"></i></button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="mt-4">
-                <button @click="addNewTree" class="btn btn-primary"><i class="pi pi-plus mr-2"></i> Add New Tree</button>
-            </div>
+        <div class="bg-white p-2 overflow-x-auto">
+          <!--<h2 class="text-xl font-semibold mb-2">Tree Table</h2>-->
+          <table class="border-collapse table-auto min-w-full">
+            <thead class="text-center text-xs uppercase font-medium text-gray-500 bg-gray-50">
+              <tr>
+                  <th class="w-8">TR</th>
+                  <th class="w-10">PF</th>
+                  <th class="w-12">Sp</th>
+                  <th class="w-14">Stat</th>
+                  <th class="w-14">DBH</th>
+                  <th class="w-8">FP</th>
+                  <th class="w-8">FF</th>
+                  <th class="w-10">BD</th>
+                  <th class="w-10">BHT</th>
+                  <th class="w-10">THT</th>
+                  <th class="w-10">Age</th>
+                  <th class="w-12">CP</th>
+                  <th class="w-10">CR</th>
+                  <th class="w-10">Vig</th>
+                  <th class="w-14">Dmg</th>
+                  <th class="w-10">Az</th>
+                  <th class="w-10">Dist</th>
+                  <th class="text-left w-30">Notes</th>
+                  <th class="w-14">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white text-left text-sm">
+              <tr v-for="tree in localTrees" :key="tree.id" @click="startEditing(tree)"
+                class="hover:bg-lime-100 cursor-pointer py-0">
+                  <td class="compact-td text-center min-w-6">{{ tree.treeNumber }}</td>
+                  <td class="compact-td text-center min-w-10">
+                      <div v-if="!isEditing(tree.id)" class="">{{ tree.design_code }}</div>
+                      <select v-else v-model="editingTree.design_code" class="">
+                          <option v-for="val in design_code_list" :key="val" :value="val">{{ val }}</option>
+                      </select>
+                  </td>
+                  <td class="compact-td min-w-12">
+                      <div v-if="!isEditing(tree.id)" class="table-field w-12">{{ tree.species }}</div>
+                      <select v-else v-model="editingTree.species" class="table-field">
+                          <option v-for="val in species_list" :key="val" :value="val">{{ val }}</option>
+                      </select>
+                  </td>
+                  <td class="compact-td min-w-12">
+                      <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.status }}</div>
+                      <select v-else v-model="editingTree.status" class="table-field">
+                          <option v-for="val in status_list" :key="val" :value="val">{{ val }}</option>
+                      </select>
+                  </td>
+                  <td class="compact-td min-w-10">
+                      <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.diameter }}</div>
+                      <input v-else v-model.number="editingTree.diameter" type="number" class="table-field">
+                  </td>
+                  <td class="compact-td min-w-8">
+                      <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.form_point }}</div>
+                      <input v-else v-model.number="editingTree.form_point" type="number" class="table-field">
+                  </td>
+                  <td class="compact-td min-w-8">
+                      <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.form_factor }}</div>
+                      <input v-else v-model.number="editingTree.form_factor" type="number" class="table-field">
+                  </td>
+                  <td class="compact-td w-10">
+                      <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.bole_diam }}</div>
+                      <select v-else v-model="editingTree.bole_diam" class="table-field">
+                          <option v-for="val in bole_diam_codes" :key="val" :value="val">{{ val }}</option>
+                      </select>
+                  </td>
+                  <td class="compact-td min-w-12">
+                      <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.bole_height }}</div>
+                      <input v-else v-model.number="editingTree.bole_height" type="number" class="table-field">
+                  </td>
+                  <td class="compact-td min-w-12">
+                      <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.total_height }}</div>
+                      <input v-else v-model.number="editingTree.total_height" type="number" class="table-field">
+                  </td>
+                  <td class="compact-td min-w-10">
+                      <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.age }}</div>
+                      <input v-else v-model.number="editingTree.age" type="number" class="table-field">
+                  </td>
+                  <td class="compact-td min-w-14">
+                      <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.crown_position }}</div>
+                      <select v-else v-model="editingTree.crown_position" class="table-field">
+                          <option v-for="val in crown_position_list" :key="val" :value="val">{{ val }}</option>
+                      </select>
+                  </td>
+                  <td class="compact-td min-w-10">
+                      <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.crown_ratio }}</div>
+                      <select v-else v-model="editingTree.crown_ratio" class="table-field">
+                          <option v-for="val in crown_ratio_list" :key="val" :value="val">{{ val }}</option>
+                      </select>
+                  </td>
+                  <td class="compact-td min-w-10">
+                      <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.vigor }}</div>
+                      <select v-else v-model="editingTree.vigor" class="table-field">
+                          <option v-for="val in vigor_list" :key="val" :value="val">{{ val }}</option>
+                      </select>
+                  </td>
+                  <td class="compact-td min-w-14">
+                      <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.damage }}</div>
+                      <select v-else v-model="editingTree.damage" class="table-field">
+                          <option v-for="val in damage_list" :key="val" :value="val">{{ val }}</option>
+                      </select>
+                  </td>
+                  <td class="compact-td min-w-12">
+                      <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.azimuth }}</div>
+                      <input v-else v-model.number="editingTree.azimuth" type="number" class="table-field">
+                  </td>
+                  <td class="compact-td min-w-10">
+                      <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.distance }}</div>
+                      <input v-else v-model.number="editingTree.distance" type="number" class="table-field">
+                  </td>
+                  <td class="compact-td min-w-30">
+                      <div v-if="!isEditing(tree.id)" class="table-text">{{ tree.notes }}</div>
+                      <input v-else v-model="editingTree.notes" type="text" class="table-text">
+                  </td>
+                  <td class="compact-td  font-medium">
+                      <div v-if="isEditing(tree.id)" class="flex items-center space-x-2">
+                          <button @click.stop="saveChanges" class="text-teal-600 hover:text-teal-900"><i class="pi pi-check"></i></button>
+                          <button @click.stop="cancelEditing" class="text-gray-600 hover:text-gray-900"><i class="pi pi-times"></i></button>
+                      </div>
+                      <button v-else @click.stop="$emit('delete-tree', tree.id)" class="text-red-600 hover:text-red-900"><i class="pi pi-trash"></i></button>
+                  </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="mt-4">
+            <button @click="addNewTree" class="btn btn-primary"><i class="pi pi-plus mr-2"></i> Add New Tree</button>
+          </div>
         </div>
       `,
       setup(props, { emit }) {
@@ -1150,7 +1151,7 @@
             </div>
 
             <!-- Tree Table Tab Content -->
-            <div v-if="activeTab === 'table'" class="bg-white p-4 rounded-lg shadow">
+            <div v-if="activeTab === 'table'" class="bg-white p-2">
                 <TreeTable
                   :trees="sortedTrees"
                   :design_code_list="design_code_list"

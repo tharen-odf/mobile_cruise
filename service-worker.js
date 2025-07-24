@@ -2,7 +2,7 @@
 
 const ROOT_PATH = '/mobile_cruise'; // Root path of your app, adjust if necessary
 const APP_PREFIX = 'mobile-cruise'; // Prefix for your app's cache
-const CACHE_VERSION = 'v8'; // Version of your app, increment this when you update your
+const CACHE_VERSION = 'v9'; // Version of your app, increment this when you update your
 const CACHE_NAME = `${APP_PREFIX}-${CACHE_VERSION}`; // Full cache name
 
 // List of all the URLs you want to cache for offline access.
