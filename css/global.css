@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+/* Custom styles for the plot canvas */
+.plot-canvas {
+  border: 2px solid #d1d5db;
+  cursor: crosshair;
+  background-color: #f9fafb;
+  touch-action: none; /* Prevent default touch actions like scrolling */
+}
+
+/* Tailwind-like button styles */
+.btn { @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2; }
+.btn-primary { @apply bg-teal-600 hover:bg-teal-700 focus:ring-teal-500; }
+.btn-secondary { @apply bg-gray-600 hover:bg-gray-700 focus:ring-gray-500; }
+.btn-danger { @apply bg-red-600 hover:bg-red-700 focus:ring-red-500; }
+
+/* Tailwind-like input field styles */
+.input-field { @apply mt-1 block w-full px-2 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm; }
+.table-input { @apply bg-teal-200}
+
+
+/* Tailwind-like card styles */
+.card { @apply bg-white shadow-lg rounded-lg p-4 sm:p-6 mb-4; }
+
+/* Modal specific styles */
+.modal-container { @apply fixed inset-0 z-50 w-screen overflow-y-auto bg-gray-900/75 transition-opacity; }
+.modal-panel { @apply relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg; }
+
+.compact-th {@apply px-1 py-1}
+.compact-td {@apply px-1 py-1}
+
+/* Hide number spinners */
+@layer base {
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number'] {
+    -webkit-appearance: none;
+    margin: 0;
+    -moz-appearance: textfield !important;
+  }
+}
