@@ -15,7 +15,7 @@
 .btn-danger { @apply bg-red-600 hover:bg-red-700 focus:ring-red-500; }
 
 /* Tailwind-like input field styles */
-.input-field { @apply mt-1 block w-full px-1 py-1 bg-white border border-gray-300 rounded-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-700 focus:border-gray-700 sm:text-sm; }
+.input-field { @apply mt-1 block w-full px-1 py-0 bg-white border border-gray-300 placeholder-gray-400 focus:outline-none focus:ring-gray-700 focus:border-gray-700 sm:text-sm; }
 .table-field { @apply bg-transparent text-center w-full h-full px-1}
 .table-text { @apply bg-transparent text-left truncate w-full h-full px-1}
 
