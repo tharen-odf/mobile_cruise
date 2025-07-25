@@ -17,7 +17,7 @@
 /* Tailwind-like input field styles */
 .input-field { @apply mt-1 block w-full px-1 py-1 bg-white border border-gray-300 rounded-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-700 focus:border-gray-700 sm:text-sm; }
 .table-field { @apply bg-transparent text-center w-full h-full px-1}
-.table-text { @apply bg-transparent text-left w-full h-full px-1}
+.table-text { @apply bg-transparent text-left truncate w-full h-full px-1}
 
 
 /* Tailwind-like card styles */
@@ -30,6 +30,9 @@
 .compact-th {@apply px-0 py-0 mx-0}
 .compact-td {@apply border border-slate-400 p-0 truncate}
 .compact-tr {@apply px-0 py-0.5 gap-2}
+
+.tr-active {@apply bg-gray-200}
+.tr-inactive {}
 
 /* Hide number spinners */
 @layer base {
