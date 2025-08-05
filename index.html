@@ -285,29 +285,52 @@
             <!-- Existing Projects List -->
             <div>
               <!--<h2 class="text-xl font-semibold mb-2">Existing Projects</h2>-->
-              <div v-if="projects.length === 0" class="text-center text-gray-500 py-8">No projects found. Create one to get started!</div>
+              <div v-if="projects.length === 0" class="text-center text-gray-500 p-8">No projects found. Create one to get started!</div>
               <div v-else class="grid grid-cols-1">
-                <div v-for="project in projects" :key="project.id" class="card mb-2 hover:bg-lime-50 transition-colors">
+
+                <!-- Project Cards -->
+                <div v-for="project in projects" :key="project.id" class="card p-1 relative hover:bg-lime-50 transition-colors border-b-2 border-gray-300">
+
                   <div class="flex-grow">
-                  <h3 class="text-lg font-bold text-teal-700">{{ project.name }}</h3>
-                  <p class="text-sm text-gray-500">Created: {{ new Date(project.createdAt).toLocaleString() }}</p>
-                  <p class="text-sm text-gray-500">Plots: {{ project.plotCount || 0 }}</p>
-                  <p class="w-full text-right text-gray-500 italic text-xs">ID: {{ project.id }}</p>
+                    <div><router-link :to="'/project/' + project.id + '/plots'" class="">
+
+                      <h3 class="text-lg font-bold text-teal-700">{{ project.name }}</h3>
+                      <p class="text-sm text-gray-500">Created: {{ new Date(project.createdAt).toLocaleString() }}</p>
+                      <p class="text-sm text-gray-500">Plots: {{ project.plotCount || 0 }}</p>
+                      <p class="w-full text-right text-gray-400 italic text-xs">ID: {{ project.id }}</p>
+                    </router-link></div>
+                    <!--<div class="mt-4 flex flex-wrap gap-2">
+                      <router-link :to="'/project/' + project.id + '/plots'" class="btn btn-primary text-sm flex-grow">
+                        <i class="pi pi-compass h-4 w-4 mr-2"></i> Plots
+                      </router-link>
+                    </div>-->
                   </div>
-                  <div class="mt-4 flex flex-wrap gap-2">
-                  <router-link :to="'/project/' + project.id + '/plots'" class="btn btn-primary text-sm flex-grow">
-                    <i class="pi pi-compass h-4 w-4 mr-2"></i> Plots
-                  </router-link>
-                  <button @click="exportProject(project.id)" class="btn btn-secondary text-sm flex-grow">
-                    <i class="pi pi-download h-4 w-4 mr-2"></i> Export
-                  </button>
+
+                  <!-- Menu container -->
+                  <div ref="menuElement" class="absolute top-0 right-0 z-10">
+                      <button @click.stop="toggleMenu(project.id)" type="button" class="m-2 rounded-full hover:bg-lime-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                          <i class="pi pi-ellipsis-v"></i>
+                      </button>
+                      <!-- Dropdown menu -->
+                      <div v-if="isMenuOpen && selectedPlotId === project.id" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20">
+                          <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                              <button @click="exportProject(project.id)" type="button" class="w-full text-left flex items-center px-4 py-2 text-sm hover:bg-gray-100" role="menuitem">
+                                  <i class="pi pi-download mr-2"></i>Export Project
+                              </button>
+                              <button @click="deleteProject(project.id)" type="button" class="w-full text-left flex items-center px-4 py-2 text-sm text-red-700 hover:bg-gray-100" role="menuitem">
+                                  <i class="pi pi-trash mr-2"></i>Delete Project
+                              </button>
+
+                          </div>
+                      </div>
                   </div>
+
                 </div>
               </div>
             </div>
 
             <!-- Create New Project Section -->
-            <div class="bg-white p-2">
+            <div class="bg-white p-1">
               <h2 class="text-xl font-semibold mb-2">Create New Project</h2>
               <form @submit.prevent="addProject" class="flex flex-col sm:flex-row gap-2">
                 <input v-model="newProjectName" type="text" placeholder="Enter project name" class="input-field flex-grow" required>
@@ -324,6 +347,21 @@
         const projects = ref([]); // Reactive reference for storing projects
         const newProjectName = ref(''); // Reactive reference for new project input
         const alertInfo = reactive({ show: false, title: '', message: '' }); // Reactive object for alert modal state
+
+        const isMenuOpen = ref(false);
+        const selectedPlotId = ref(null);
+        const menuElement = ref(null);
+
+        // Function to toggle the menu
+        function toggleMenu(projectId) {
+          if (isMenuOpen.value) {
+            selectedPlotId.value = null;
+          } else {
+            selectedPlotId.value = projectId;
+          }
+
+          isMenuOpen.value = !isMenuOpen.value;
+        }
 
         // Inject the globally provided showAbout function
         const showAbout = inject('showAbout');
@@ -433,7 +471,9 @@
           { label: 'Projects', to: '/' }
         ];
 
-        return { projects, newProjectName, addProject, exportProject, importProject, alertInfo, breadcrumbs, showAbout };
+        return { projects, newProjectName, addProject, exportProject, importProject, alertInfo, breadcrumbs, showAbout,
+          toggleMenu, menuElement, isMenuOpen, selectedPlotId
+         };
       }
     };
 
@@ -451,14 +491,14 @@
             <!-- Plots List -->
             <div>
               <!--<h2 class="text-xl font-semibold mb-2">Survey Plots</h2>-->
-              <div v-if="plots.length === 0" class="text-center text-gray-500 py-8">No plots found for this project. Add one to begin.</div>
+              <div v-if="plots.length === 0" class="text-center text-gray-500 p-8">No plots found for this project. Add one to begin.</div>
               <div v-else class="grid grid-cols-1">
-                <div v-for="plot in plots" :key="plot.id" class="card mb-2 hover:bg-lime-50 transition-colors">
+                <div v-for="plot in plots" :key="plot.id" class="card mb-2 p-1 hover:bg-lime-50 transition-colors">
                   <h3 class="text-lg font-bold text-teal-700">Plot #{{ plot.plotNumber }}</h3>
                   <div class="mt-2 grid grid-cols-3 sm:grid-cols-7 gap-2">
                     <div>
                       <label class="block text-xs font-medium text-gray-500">Slope (%)</label>
-                      <input v-model.number="plot.slope" min="0" @change="updatePlot(plot)" type="number" class="input-field bg-white text-sm p-1 w-20">
+                      <input v-model.number="plot.slope" min="0" @change="updatePlot(plot)" type="number" class="input-field text-sm p-1 w-20">
                     </div>
                     <div>
                       <label class="block text-xs font-medium text-gray-500">Aspect (°)</label>
@@ -476,15 +516,15 @@
                       <label class="block text-xs font-medium text-gray-500">Longitude</label>
                       <input v-model.number="plot.planned_longitude" @change="updatePlot(plot)" type="number" class="input-field text-sm p-1 w-20">
                     </div>
-                    <div class="bg-red-500 flex">
-                      <router-link :to="'/gps/' + plot.id" class="bg-red-500 flex-grow">
-                        <i class="pi pi-globe h-4 w-4 mr-2"></i>
+                    <div class="flex items-center justify-center border hover:bg-blue-100 rounded-md p-1 transition-colors w-11">
+                      <router-link :to="'/gps/' + plot.id" class="">
+                        <i class="pi pi-globe h-4 w-4"></i>
                       </router-link>
                     </div>
 
                     <div class="col-span-full">
                       <label class="block text-xs font-medium text-gray-500 p-1">Notes</label>
-                      <textarea v-model="plot.notes" placeholder="Any additional notes..." class="input-field w-full" rows="1"></textarea>
+                      <textarea v-model="plot.notes" placeholder="Any additional notes..." class="input-field w-full p-1" rows="1"></textarea>
                     </div>
 
                   </div>
@@ -1544,6 +1584,92 @@
       }
     };
 
+    // --- NEW: GpsPage Component ---
+    const GpsPage = {
+      components: { NavBar },
+      template: `
+        <div>
+          <NavBar :breadcrumbs="breadcrumbs" @about="showAbout"/>
+          <div class="p-4">
+            <div v-if="plot.id" class="card">
+              <h2 class="text-xl font-semibold mb-2">GPS for Plot #{{ plot.plotNumber }}</h2>
+              <p class="text-gray-600 mb-4">This feature is under development. Here you will be able to collect and view GPS data for the plot.</p>
+
+              <div class="space-y-2">
+                <div><span class="font-semibold">Planned Latitude:</span> {{ plot.planned_latitude || 'N/A' }}</div>
+                <div><span class="font-semibold">Planned Longitude:</span> {{ plot.planned_longitude || 'N/A' }}</div>
+              </div>
+
+              <div class="mt-4">
+                <button class="btn btn-primary" @click="collectGps">Collect Current Position (WIP)</button>
+              </div>
+
+              <div v-if="currentPosition" class="mt-4 p-2 bg-lime-100 rounded">
+                <h3 class="font-semibold">Current Position:</h3>
+                <p>Latitude: {{ currentPosition.coords.latitude.toFixed(6) }}</p>
+                <p>Longitude: {{ currentPosition.coords.longitude.toFixed(6) }}</p>
+                <p>Accuracy: {{ currentPosition.coords.accuracy.toFixed(1) }} meters</p>
+              </div>
+
+              <div v-if="gpsError" class="mt-4 p-2 bg-red-100 rounded text-red-700">
+                <p>Error: {{ gpsError }}</p>
+              </div>
+
+            </div>
+            <div v-else class="text-center text-gray-500 py-8">Loading plot data...</div>
+          </div>
+        </div>
+      `,
+      setup() {
+        const route = useRoute();
+        const router = useRouter();
+        const plotId = route.params.plotId;
+        const plot = ref({});
+        const project = ref({});
+        const showAbout = inject('showAbout');
+        const currentPosition = ref(null);
+        const gpsError = ref(null);
+
+        async function loadData() {
+          const p = await db.plots.get(plotId);
+          if (!p) {
+            router.push('/');
+            return;
+          }
+          plot.value = p;
+        }
+
+        onMounted(loadData);
+
+        function collectGps() {
+          currentPosition.value = null;
+          gpsError.value = null;
+          if ('geolocation' in navigator) {
+            navigator.geolocation.getCurrentPosition(
+              (position) => { currentPosition.value = position; },
+              (error) => { gpsError.value = error.message; },
+              { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+          } else {
+            gpsError.value = 'Geolocation is not supported by your browser.';
+          }
+        }
+
+        watch(() => plot.value.projectId, async (newProjectId) => {
+          if (newProjectId) { project.value = await db.projects.get(newProjectId) || {}; }
+        });
+
+        const breadcrumbs = computed(() => [
+          { label: 'Projects', to: '/' },
+          { label: project.value.name || 'Project', to: `/project/${plot.value.projectId}/plots` },
+          { label: `Plot #${plot.value.plotNumber || ''}`, to: `/plot/${plotId}` },
+          { label: 'GPS' }
+        ]);
+
+        return { plot, project, breadcrumbs, showAbout, collectGps, currentPosition, gpsError };
+      }
+    };
+
     // --- NEW: Root component to manage global state like the About modal ---
     const Root = {
         components: { About },
@@ -1589,6 +1715,7 @@
       { path: '/', component: Home }, // Home page for project summary
       { path: '/project/:projectId/plots', component: PlotList }, // List of plots for a specific project
       { path: '/plot/:plotId', component: PlotObservation }, // Detailed observation for a single plot
+      { path: '/gps/:plotId', component: GpsPage }, // GPS collection for a single plot
     ];
 
     // Create the router instance
