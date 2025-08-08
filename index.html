@@ -103,6 +103,12 @@
       ));
     }
 
+    const selectAllText = (event) => {
+      if (event) {
+        event.target.select();
+      }
+    };
+
     // --- DATABASE SETUP (Dexie.js) ---
     const db = new Dexie('ForestInventoryDB');
     db.version(1).stores({
@@ -208,7 +214,7 @@
       },
       template: `
         <div v-if="isOpen" class="modal-container">
-          <div class="modal-panel w-full max-w-md p-2">
+          <div class="modal-panel w-3/4 max-w-md p-2">
             <h3 class="text-xl font-semibold text-gray-900 mb-4">{{ title }}</h3>
             <p class="text-sm text-gray-500 mb-4">{{ message }}</p>
             <input
@@ -386,18 +392,30 @@
                   class="card relative hover:bg-lime-50 transition-colors">
 
                   <div class="flex-grow">
-                    <div><router-link :to="'/project/' + project.id + '/plots'" class="">
+                    <div>
 
-                      <h3 class="text-lg font-bold text-teal-700">{{ project.name }}</h3>
+                      <input v-model="project.name" type="text" class="text-lg font-bold text-teal-700 w-1/2">
+                      <div class="col-span-full">
+                        <label class="block text-xs font-medium text-gray-500 p-1">Description:</label>
+                        <textarea v-model="project.description" placeholder="Project description..."
+                          class="input-field w-full text-sm" rows="1"></textarea>
+                      </div>
+                      <div class="col-span-full">
+                        <label class="block text-xs font-medium text-gray-500 p-1">Notes:</label>
+                        <textarea v-model="project.notes" placeholder="Any additional notes..."
+                          class="input-field w-full text-sm" rows="1"></textarea>
+                      </div>
                       <p class="text-sm text-gray-500">Created: {{ new Date(project.createdAt).toLocaleString() }}</p>
-                      <p class="text-sm text-gray-500">Plots: {{ project.plotCount || 0 }}</p>
-                      <p class="w-full text-right text-gray-400 italic text-xs">ID: {{ project.id }}</p>
-                    </router-link></div>
-                    <!--<div class="mt-4 flex flex-wrap gap-2">
+                      <div class="flex justify-between items-center">
+                        <p class="text-sm text-gray-500 min-w-16">Plots: {{ project.plotCount || 0 }}</p>
+                        <p class="text-right text-gray-400 italic text-xs">ID: {{ project.id }}</p>
+                      </div>
+                    </div>
+                    <div class="mt-4 flex flex-wrap gap-2">
                       <router-link :to="'/project/' + project.id + '/plots'" class="btn btn-primary text-sm flex-grow">
                         <i class="pi pi-compass h-4 w-4 mr-2"></i> Plots
                       </router-link>
-                    </div>-->
+                    </div>
                   </div>
 
                   <!-- Menu container -->
@@ -406,16 +424,21 @@
                           <i class="pi pi-ellipsis-v"></i>
                       </button>
                       <!-- Dropdown menu -->
-                      <div v-if="isMenuOpen && selectedPlotId === project.id" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20">
+                      <div v-if="isMenuOpen && selectedProjectId === project.id" class="modal-container" @click.self="toggleMenu(project.id)">
+                      <div v-if="isMenuOpen && selectedProjectId === project.id" class="modal-panel w-3/4">
                           <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                               <button @click="exportProject(project.id)" type="button" class="w-full text-left flex items-center px-4 py-2 text-sm hover:bg-gray-100" role="menuitem">
                                   <i class="pi pi-download mr-2"></i>Export Project
                               </button>
+                              <!--<button @click="toggleEditing(project.id)" type="button" class="w-full text-left flex items-center px-4 py-2 text-sm hover:bg-gray-100" role="menuitem">
+                                  <i class="pi pi-pencil mr-2"></i>Edit Project
+                              </button>-->
                               <button @click="deleteProject(project.id)" type="button" class="w-full text-left flex items-center px-4 py-2 text-sm text-red-700 hover:bg-gray-100" role="menuitem">
                                   <i class="pi pi-trash mr-2"></i>Delete Project
                               </button>
 
                           </div>
+                      </div>
                       </div>
                   </div>
 
@@ -451,17 +474,12 @@
         const confirmInfo = reactive({ show: false, projectId: null });
 
         const isMenuOpen = ref(false);
-        const selectedPlotId = ref(null);
+        const selectedProjectId = ref(null);
         const menuElement = ref(null);
 
         // Function to toggle the menu
         function toggleMenu(projectId) {
-          if (isMenuOpen.value) {
-            selectedPlotId.value = null;
-          } else {
-            selectedPlotId.value = projectId;
-          }
-
+          selectedProjectId.value = isMenuOpen.value ? null : projectId;
           isMenuOpen.value = !isMenuOpen.value;
         }
 
@@ -630,7 +648,7 @@
 
         return { projects, addProject, exportProject, importProject, alertInfo, confirmInfo,
           breadcrumbs, showAbout,
-          toggleMenu, menuElement, isMenuOpen, selectedPlotId,
+          toggleMenu, menuElement, isMenuOpen, selectedProjectId,
           inputInfo, newProject, isInputModalOpen, handleInputModalConfirm,
           deleteProject, handleDeleteConfirm
          };
