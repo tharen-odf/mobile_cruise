@@ -20,7 +20,7 @@
 .table-text { @apply bg-transparent text-left truncate w-full h-full px-1}
 
 /* Tailwind-like card styles */
-.card { @apply bg-white shadow-lg rounded-lg p-4 sm:p-6 mb-4; }
+.card { @apply bg-white shadow-sm p-1 m-1; }
 
 /* Modal specific styles */
 .modal-container { @apply fixed inset-0 z-50 w-screen overflow-y-auto bg-gray-900/75 transition-opacity; }
