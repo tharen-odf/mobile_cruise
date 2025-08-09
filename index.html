@@ -96,6 +96,9 @@
     const vigor_list = ['H', 'M', 'L', 'D','']; // Vigor options
     const damage_list = ['','Animal', 'Mechanical', 'Fire', 'Disease', 'Insect']; // Damage options
 
+    const is_mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    // const is_mobile=true;
+
     // Utility function for UUID (uses browser's crypto API)
     function uuid() {
       return (crypto.randomUUID ? crypto.randomUUID() : ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
@@ -291,7 +294,7 @@
 
     // --- NavBar Component (Updated with correct absolute positioning) ---
     const NavBar = {
-      props: ['breadcrumbs','app_version'],
+      props: ['breadcrumbs','app_version','is_mobile'],
       emits: ['import', 'about', 'create-project'],
       template: `
         <div class="relative">
@@ -310,7 +313,10 @@
                 </template>
               </div>
 
-              <div class="text-xs nav-text ml-auto">v{{ app_version }}</div>
+              <div class="flex ml-auto">
+                <div v-if="is_mobile" class="text-xs nav-text mr-1"><i class="pi pi-mobile"></i></div>
+                <div class="text-xs nav-text ">v{{ app_version }}</div>
+              </div>
 
               <!-- Hamburger Button and Dropdown Container -->
               <div class="relative flex-right">
@@ -370,7 +376,7 @@
       components: { ConfirmationModal, AlertModal, NavBar, InputModal },
       template: `
         <div>
-          <NavBar :breadcrumbs="breadcrumbs" :app_version="app_version" @import="importProject" @about="showAbout" @create-project="newProject"/>
+          <NavBar :breadcrumbs="breadcrumbs" :is_mobile="is_mobile" :app_version="app_version" @import="importProject" @about="showAbout" @create-project="newProject"/>
           <div class="">
             <!-- Alert Modal display -->
             <AlertModal
@@ -679,7 +685,8 @@
           breadcrumbs, app_version, showAbout, updateProject,
           toggleMenu, menuElement, isMenuOpen, selectedProjectId,
           inputInfo, newProject, isInputModalOpen, handleInputModalConfirm,
-          deleteProject, handleDeleteConfirm
+          deleteProject, handleDeleteConfirm,
+          is_mobile
          };
       }
     };
@@ -1354,7 +1361,7 @@
       components: { TreeEditForm, ConfirmationModal, NavBar, TreeTable },
       template: `
         <div>
-          <NavBar :breadcrumbs="breadcrumbs" :app_version="app_version" @import="importProject" @about="showAbout"/>
+          <NavBar :breadcrumbs="breadcrumbs" :is_mobile="is_mobile" :app_version="app_version" @import="importProject" @about="showAbout"/>
           <div v-if="plot.id" class="mt-0">
             <!-- Confirmation Modal display -->
             <ConfirmationModal v-if="confirmInfo.show" title="Delete Tree" message="Are you sure you want to delete this tree? This action cannot be undone." @confirm="handleDeleteConfirm" @cancel="confirmInfo.show = false"/>
@@ -1837,7 +1844,8 @@
           crown_position_list, crown_ratio_list, vigor_list, damage_list,
           sortedTrees, plotCanvas, handleCanvasClick, selectTreeForEditing, handleSaveTree, handleDeleteTree,
           nextTreeNumber, treeAddForm, addTreeByAzimuth, confirmInfo, handleDeleteConfirm, activeTab, editingTreeId,
-          breadcrumbs, app_version, importProject, showAbout, handleCreateTable
+          breadcrumbs, app_version, importProject, showAbout, handleCreateTable,
+          is_mobile
         };
       }
     };
