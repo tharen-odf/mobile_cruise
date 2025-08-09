@@ -310,7 +310,7 @@
                 </template>
               </div>
 
-              <div class="text-xs text-teal-600 dark:text-teal-400 ml-auto">v{{ app_version }}</div>
+              <div class="text-xs nav-text ml-auto">v{{ app_version }}</div>
 
               <!-- Hamburger Button and Dropdown Container -->
               <div class="relative flex-right">
@@ -403,7 +403,7 @@
               <!--<h2 class="text-xl font-semibold mb-2">Existing Projects</h2>-->
               <div
                 v-if="projects.length === 0"
-                class="text-center text-gray-500 p-8"
+                class="text-center card-text p-8"
               >
               No projects found. Create one to get started!
               </div>
@@ -833,9 +833,8 @@
 
         const newPlot = async () => {
           // Get the max plot number for the current project
-          //const plotNumber = await db.plots.where('projectId').equals(projectId).max('plotNumber') + 1;
           const plots = await db.plots.where('projectId').equals(projectId).sortBy('plotNumber');
-          const plotNumber = plots.at(-1)['plotNumber']+1; //.then(plot => plot ? plot.plotNumber : 0) + 1;
+          const plotNumber = (plots.length>0) ? plots.at(-1)['plotNumber']+1 : 1; //.then(plot => plot ? plot.plotNumber : 0) + 1;
           const createdAt = new Date().toISOString();
           const plotId = uuid();
           await db.plots.add({
@@ -862,9 +861,9 @@
 
         // Function to handle plot deletion after confirmation
         async function handleDeleteConfirm() {
-          await db.transaction('rw', db.plots, db.trees, async () => {
+          await db.transaction('rw', db.projects, db.plots, db.trees, async () => {
             await db.trees.where('plotId').equals(confirmInfo.plotId).delete(); // Delete associated trees
-            await db.plots.delete(confirmInfo.plotId); // Delete the plot
+            await dbDeletePlot(confirmInfo.plotId);
             await db.projects.update(projectId, {lastUpdated: new Date().toISOString(),});
           });
           confirmInfo.show = false; // Hide confirmation modal

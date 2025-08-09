@@ -51,7 +51,6 @@
     --text-xl--line-height: calc(1.75 / 1.25);
     --text-2xl: 1.5rem;
     --text-2xl--line-height: calc(2 / 1.5);
-    --font-weight-thin: 100;
     --font-weight-normal: 400;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
@@ -901,11 +900,6 @@
       background-color: var(--color-gray-700);
     }
   }
-  .dark\:text-teal-400 {
-    @media (prefers-color-scheme: dark) {
-      color: var(--color-teal-400);
-    }
-  }
   .dark\:text-white {
     @media (prefers-color-scheme: dark) {
       color: var(--color-white);
@@ -949,8 +943,8 @@ nav {
   }
 }
 .nav-text {
-  --tw-font-weight: var(--font-weight-thin);
-  font-weight: var(--font-weight-thin);
+  --tw-font-weight: var(--font-weight-normal);
+  font-weight: var(--font-weight-normal);
   color: var(--color-teal-600);
   @media (prefers-color-scheme: dark) {
     color: var(--color-teal-400);
