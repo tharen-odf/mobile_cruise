@@ -83,7 +83,7 @@
     const { createApp, ref, reactive, onMounted, onUnmounted, computed, watch, nextTick, provide, inject } = Vue;
     const { createRouter, createWebHashHistory, useRoute, useRouter } = VueRouter;
 
-    const app_version = '0.0.1'; // Current app version
+    const app_version = ref('0.0.1'); // Current app version
     // --- MOCK USER (for tracking updates) ---
     const currentUser = { username: 'field_user_01' };
     const design_code_list = ['B1', 'F1', 'S1', 'B2', 'F2', 'S2']; // Sample codes for trees
@@ -291,49 +291,52 @@
 
     // --- NavBar Component (Updated with correct absolute positioning) ---
     const NavBar = {
-      props: ['breadcrumbs'],
+      props: ['breadcrumbs','app_version'],
       emits: ['import', 'about', 'create-project'],
       template: `
         <div class="relative">
-          <nav class="bg-white border-b border-gray-200 text-lg">
-            <div class="max-w-7xl mx-auto px-2 py-1 flex items-center justify-between">
+          <nav class="bg-white border-b border-gray-200 dark:border-teal-400 text-lg">
+            <div class="max-w-7xl mx-auto px-2 py-1 flex items-center">
               <!-- Breadcrumbs -->
               <div class="flex items-center space-x-2">
                 <template v-for="(crumb, idx) in breadcrumbs || []" :key="idx">
                   <router-link
                     v-if="crumb && crumb.to"
                     :to="crumb.to"
-                    class="text-teal-700 hover:underline font-medium"
+                    class="nav-text hover:underline"
                   >{{ crumb.label }}</router-link>
-                  <span v-else-if="crumb" class="text-gray-500">{{ crumb.label }}</span>
-                  <span v-if="idx < (breadcrumbs?.length || 0) - 1" class="mx-1 text-gray-400">/</span>
+                  <span v-else-if="crumb" class="nav-text">{{ crumb.label }}</span>
+                  <span v-if="idx < (breadcrumbs?.length || 0) - 1" class="nav-text">/</span>
                 </template>
               </div>
+
+              <div class="text-xs text-teal-600 dark:text-teal-400 ml-auto">v{{ app_version }}</div>
+
               <!-- Hamburger Button and Dropdown Container -->
-              <div class="relative">
-                <button @click="menuOpen = !menuOpen" class="inline-flex items-center justify-center p-2 rounded-md text-teal-700 hover:bg-gray-100">
+              <div class="relative flex-right">
+                <button @click="menuOpen = !menuOpen" class="inline-flex items-center justify-center m-1 p-1 rounded-md nav-menu-button">
                   <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
                   </svg>
                 </button>
 
                 <!-- Hamburger Menu Dropdown (absolutely positioned) -->
-                <div v-if="menuOpen" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                <div v-if="menuOpen" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-50">
                   <div class="py-1">
-                    <button type="button" @click="$emit('create-project'); menuOpen = false" class="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <button type="button" @click="$emit('create-project'); menuOpen = false" class="w-full text-left flex items-center px-4 py-2 menu-text">
                       <i class="pi pi-plus mr-2"></i> New Project
                     </button>
-                    <label for="import-json-navbar" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                    <label for="import-json-navbar" class="flex items-center px-4 py-2 menu-text cursor-pointer">
                       <i class="pi pi-upload mr-2"></i> Import Project
                     </label>
                     <input id="import-json-navbar" type="file" @change="$emit('import', $event)" class="hidden" accept=".json">
-                    <button class="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" disabled>
+                    <button class="w-full text-left flex items-center px-4 py-2 menu-text" disabled>
                       <i class="pi pi-wrench mr-2"></i> Tools (coming soon)
                     </button>
-                    <button class="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" disabled>
+                    <button class="w-full text-left flex items-center px-4 py-2 menu-text" disabled>
                       <i class="pi pi-cog mr-2"></i> Setup (coming soon)
                     </button>
-                    <button type="button" @click="$emit('about'); menuOpen = false" class="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <button type="button" @click="$emit('about'); menuOpen = false" class="w-full text-left flex items-center px-4 py-2 menu-text">
                       <i class="pi pi-info-circle mr-2"></i> About
                     </button>
                   </div>
@@ -367,7 +370,7 @@
       components: { ConfirmationModal, AlertModal, NavBar, InputModal },
       template: `
         <div>
-          <NavBar :breadcrumbs="breadcrumbs" @import="importProject" @about="showAbout" @create-project="newProject"/>
+          <NavBar :breadcrumbs="breadcrumbs" :app_version="app_version" @import="importProject" @about="showAbout" @create-project="newProject"/>
           <div class="">
             <!-- Alert Modal display -->
             <AlertModal
@@ -412,33 +415,33 @@
                   class="card relative hover:bg-lime-50 transition-colors">
 
                   <div class="flex-grow" @click="selectedProjectId=project.id">
-                    <div v-if="selectedProjectId != project.id" class="flex justify-between items-center">
-                      <div><p class="font-bold">{{ project.name }}</p></div>
-                      <i :class="selectedProjectId === project.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" class="h-5 w-5 text-gray-500"></i>
+                    <div v-if="selectedProjectId != project.id" class="flex justify-between items-center card-header">
+                      <div><p class="">{{ project.name }}</p></div>
+                      <i :class="selectedProjectId === project.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" class="h-5 w-5"></i>
                     </div>
                     <div v-if="selectedProjectId === project.id">
-                      <input v-model="project.name" type="text" @change="updateProject(project)" class="text-lg text-teal-700 w-1/2">
+                      <input v-model="project.name" type="text" @change="updateProject(project)" class="card-header w-1/2">
                       <div class="flex items-center col-span-full">
-                        <label class="block text-xs font-medium text-gray-500 p-1">Description:</label>
+                        <label class="block card-label">Description:</label>
                         <textarea v-model="project.description" placeholder="Project description..."
                           @change="updateProject(project)"
                           class="input-field w-full text-sm resize-y" rows="1"></textarea>
                       </div>
                       <div class="flex items-center">
-                        <label class="block text-xs font-medium text-gray-500 p-1">Notes:</label>
+                        <label class="block card-label">Notes:</label>
                         <textarea v-model="project.notes" placeholder="Any additional notes..."
                           @change="updateProject(project)"
                           class="flex-grow input-field w-full text-sm resize-y" rows="1"></textarea>
                       </div>
 
                       <div class="flex justify-between items-center py-1">
-                        <span class="text-xs text-gray-500">Created: {{ new Date(project.createdAt).toLocaleString() }}</span>
-                        <span class="text-xs text-gray-500">Updated: {{ new Date(project.lastUpdated).toLocaleString() }}</span>
+                        <span class="text-xs card-text">Created: {{ new Date(project.createdAt).toLocaleString() }}</span>
+                        <span class="text-xs card-text">Updated: {{ new Date(project.lastUpdated).toLocaleString() }}</span>
                       </div>
 
                       <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-500 min-w-16">Plots: {{ project.plotCount || 0 }}</span>
-                        <span class="text-right text-gray-400 italic text-xs">ID: {{ project.id }}</span>
+                        <span class="text-sm card-text min-w-16">Plots: {{ project.plotCount || 0 }}</span>
+                        <span class="text-right text-gray-500 dark:text-white italic text-xs">ID: {{ project.id }}</span>
                       </div>
 
                       <div class="mt-2 flex gap-2">
@@ -455,7 +458,7 @@
                     ref="menuElement"
                     class="absolute top-0 right-0 z-10"
                     >
-                      <button @click.stop="toggleMenu(project.id)" type="button" class="m-2 rounded-full hover:bg-lime-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                      <button @click.stop="toggleMenu(project.id)" type="button" class="m-2 rounded-full card-menu-button">
                           <i class="pi pi-ellipsis-v"></i>
                       </button>
                       <!-- Dropdown menu -->
@@ -673,7 +676,7 @@
         }
 
         return { projects, exportProject, importProject, alertInfo, confirmInfo,
-          breadcrumbs, showAbout, updateProject,
+          breadcrumbs, app_version, showAbout, updateProject,
           toggleMenu, menuElement, isMenuOpen, selectedProjectId,
           inputInfo, newProject, isInputModalOpen, handleInputModalConfirm,
           deleteProject, handleDeleteConfirm
@@ -687,25 +690,25 @@
       components: { ConfirmationModal, NavBar },
       template: `
         <div>
-          <NavBar :breadcrumbs="breadcrumbs" @import="importProject" @about="showAbout"/>
+          <NavBar :breadcrumbs="breadcrumbs" :app_version="app_version" @import="importProject" @about="showAbout"/>
           <div class="">
             <!-- Confirmation Modal display -->
             <ConfirmationModal v-if="confirmInfo.show" title="Delete Plot" message="Are you sure you want to delete this plot and all its associated trees? This action cannot be undone." @confirm="handleDeleteConfirm" @cancel="confirmInfo.show = false"/>
 
             <!-- Plots List -->
             <div>
-              <div v-if="plots.length === 0" class="text-center text-gray-500 p-8">No plots found for this project. Add one to begin.</div>
+              <div v-if="plots.length === 0" class="text-center card-text p-8">No plots found for this project. Add one to begin.</div>
               <div v-else class="grid grid-cols-1">
                 <div v-for="plot in plots" :key="plot.id"
                   class="card mb-2 p-1 hover:bg-lime-50 transition-colors"
                 >
                   <div class="flex-grow" @click="selectedPlotId=plot.id">
                     <div v-if="selectedPlotId != plot.id" class="flex justify-between items-center">
-                      <div class="text-lg font-bold text-teal-700">Plot #{{ plot.plotNumber }}</div>
+                      <div class="card-header">Plot #{{ plot.plotNumber }}</div>
                       <i :class="selectedPlotId === plot.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" class="h-5 w-5 text-gray-500"></i>
                     </div>
                     <div v-if="selectedPlotId === plot.id">
-                      <div class="text-lg font-bold text-teal-700 flex items-center">
+                      <div class="card-header flex items-center">
                         <div class="mr-0">Plot #</div>
                         <input v-model="plot.plotNumber" type="number" min="0" @change="updatePlot(plot)"
                           class="w-10 ml-0"
@@ -713,49 +716,49 @@
                       </div>
                       <div class="mt-2 flex flex-wrap gap-1">
                         <div class="flex flex-col justify-center">
-                          <label class="text-xs font-medium text-gray-500">Done</label>
+                          <label class="card-label">Done</label>
                           <input class="m-2" type="checkbox" v-model="plot.done" @change="updatePlot(plot)">
                         </div>
                         <div>
-                          <label class="block text-xs font-medium text-gray-500">Slope (%)</label>
+                          <label class="block card-label">Slope (%)</label>
                           <input v-model.number="plot.slope" min="0" @change="updatePlot(plot)" type="number"
                             class="input-field text-sm p-1 w-13 max-w-13">
                         </div>
                         <div>
-                          <label class="block text-xs font-medium text-gray-500">Aspect (°)</label>
+                          <label class="block card-label">Aspect (°)</label>
                           <input v-model.number="plot.aspect" min="0" max="360" @change="updatePlot(plot)" type="number"
                             class="input-field text-sm p-1 w-13 max-w-13">
                         </div>
                         <div>
-                          <label class="block text-xs font-medium text-gray-500">Elev (ft)</label>
+                          <label class="block card-label">Elev (ft)</label>
                           <input v-model.number="plot.elevation" @change="updatePlot(plot)" type="number"
                             class="input-field text-sm p-1 w-13 max-w-13">
                         </div>
                         <div>
-                          <label class="block text-xs font-medium text-gray-500">Crew</label>
+                          <label class="block card-label">Crew</label>
                           <input v-model="plot.crew" @change="updatePlot(plot)" type="text"
                             class="input-field text-sm p-1 w-30 max-w-30">
                         </div>
 
                         <fieldset class="flex min-w-100 gap-1">
-                          <legend class="text-xs font-medium text-gray-500 m-0 p-0">Location</legend>
+                          <legend class="card-label m-0 p-0">Location</legend>
                           <div class="flex items-center">
-                            <label class="mr-1 text-xs text-gray-500">Lat:</label>
+                            <label class="mr-1 text-xs card-label">Lat:</label>
                             <input v-model.number="plot.planned_latitude"
                               @change="updatePlot(plot)" type="number"
                               min="-90" max="90"
                               class="input-field text-sm p-1 w-22 max-w-22">
                           </div>
                           <div class="flex items-center">
-                            <label class="mr-1 text-xs text-gray-500">Lon:</label>
+                            <label class="mr-1 text-xs card-label">Lon:</label>
                             <input v-model.number="plot.planned_longitude"
                               @change="updatePlot(plot)" type="number"
                               min="-180" max="180"
                               class="input-field text-sm p-1 w-22 max-w-22">
                           </div>
-                          <div class="flex items-center justify-center hover:bg-blue-100 rounded-md p-1 transition-colors w-9">
+                          <div class="flex items-center justify-center card-text hover:bg-blue-100 dark:hover:bg-gray-700 rounded-md p-1 transition-colors w-9">
                             <router-link :to="'/gps/' + plot.id" class="">
-                              <i class="pi pi-globe h-4 w-4"></i>
+                              <i class="pi pi-globe"></i>
                             </router-link>
                           </div>
                         </fieldset>
@@ -763,17 +766,17 @@
                       </div>
 
                         <div class="col-span-full">
-                          <label class="block text-xs font-medium text-gray-500 p-1">Notes:</label>
+                          <label class="block card-label">Notes:</label>
                           <textarea v-model="plot.notes" placeholder="Any additional notes..."
                             @change="updatePlot(plot)"
                             class="input-field w-full text-sm" rows="1"></textarea>
                         </div>
 
 
-                      <p class="text-sm text-gray-500 mt-2">Trees Recorded: {{ plot.treeCount || 0 }}</p>
-                      <p class="text-sm text-gray-500">Last Updated: {{ new Date(plot.lastUpdated).toLocaleString() }}</p>
+                      <p class="text-xs card-text mt-2">Trees Recorded: {{ plot.treeCount || 0 }}</p>
+                      <p class="text-xs card-text">Last Updated: {{ new Date(plot.lastUpdated).toLocaleString() }}</p>
                       <!--<p class="w-full text-right text-gray-400 italic text-xs">ID: {{ plot.id }}</p>-->
-                      <div class="mt-4 flex gap-2">
+                      <div class="mt-2 flex gap-2">
                         <router-link :to="'/plot/' + plot.id" class="btn btn-primary text-sm flex-grow">
                           <i class="pi pi-list h-4 w-4 mr-2"></i>Trees
                         </router-link>
@@ -902,7 +905,7 @@
         return {
           project, plots, newPlotNumber, deletePlot,
           confirmInfo, handleDeleteConfirm, updatePlot,
-          breadcrumbs, importProject, showAbout, selectedPlotId,
+          breadcrumbs, app_version, importProject, showAbout, selectedPlotId,
           newPlot
         };
       }
@@ -918,10 +921,10 @@
       ],
       emits: ['save', 'cancel', 'delete'],
       template: `
-        <div class="bg-lime-100 p-2 relative">
+        <div class="card relative">
           <!-- Menu container -->
           <div ref="menuElement" class="absolute top-0 right-0 z-10">
-              <button @click.stop="toggleMenu" type="button" class="m-2 rounded-full hover:bg-lime-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+              <button @click.stop="toggleMenu" type="button" class="m-2 rounded-full menu-button">
                   <i class="pi pi-ellipsis-v"></i>
               </button>
               <!-- Dropdown menu -->
@@ -938,92 +941,92 @@
           <form @submit.prevent="saveTree" class="space-y-2 mr-6">
             <div class="grid grid-cols-3 md:grid-cols-7 lg:grid-cols-11 gap-2 items-end mt-0">
               <div>
-                <label class="block text-sm font-medium text-gray-700">Plot Code</label>
+                <label class="block card-label">Plot Code</label>
                 <select v-model="localTree.design_code" class="input-field w-20" required>
                   <option v-for="code in design_code_list" :key="code" :value="code">{{ code }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Species</label>
+                <label class="block card-label">Species</label>
                 <select v-model="localTree.species" class="input-field w-20" required>
                   <option v-for="species in species_list" :key="species" :value="species">{{ species }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Status</label>
+                <label class="block card-label">Status</label>
                 <select v-model="localTree.status" class="input-field w-20">
                   <option v-for="status in status_list" :key="status" :value="status">{{ status }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Count</label>
+                <label class="block card-label">Count</label>
                 <input v-model.number="localTree.count" type="number" step="1.0" placeholder="e.g., 1" class="input-field w-20" required>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">DBH (in)</label>
+                <label class="block card-label">DBH (in)</label>
                 <input v-model.number="localTree.diameter" type="number" step="0.1" placeholder="e.g., 45.2" class="input-field w-20" required>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Form Point</label>
+                <label class="block card-label">Form Point</label>
                 <input v-model.number="localTree.form_point" type="number" step="0.1" placeholder="e.g., 4.5" class="input-field w-20" required>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Form Factor</label>
+                <label class="block card-label">Form Factor</label>
                 <input v-model.number="localTree.form_factor" type="number" step="0.1" placeholder="e.g., 85.2" class="input-field w-20">
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Bole Diam</label>
+                <label class="block card-label">Bole Diam</label>
                 <select v-model="localTree.bole_diam" class="input-field w-20">
                   <option v-for="code in bole_diam_codes" :key="code" :value="code">{{ code }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Bole Ht.</label>
+                <label class="block card-label">Bole Ht.</label>
                 <input v-model.number="localTree.bole_height" type="number" step="0.1" placeholder="e.g., 99" class="input-field w-20">
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Total Ht.</label>
+                <label class="block card-label">Total Ht.</label>
                 <input v-model.number="localTree.total_height" type="number" step="0.1" placeholder="e.g., 120.5" class="input-field w-20">
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Age</label>
+                <label class="block card-label">Age</label>
                 <input v-model.number="localTree.bh_age" type="number" step="1.0" placeholder="e.g., 42" class="input-field w-20">
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Crown Pos.</label>
+                <label class="block card-label">Crown Pos.</label>
                 <select v-model="localTree.crown_position" class="input-field w-20">
                   <option v-for="code in crown_position_list" :key="code" :value="code">{{ code }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Crown Ratio</label>
+                <label class="block card-label">Crown Ratio</label>
                 <select v-model="localTree.crown_ratio" class="input-field w-20">
                     <option v-for="val in crown_ratio_list" :key="val" :value="val">{{ val }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Vigor</label>
+                <label class="block card-label">Vigor</label>
                 <select v-model="localTree.vigor" class="input-field w-20">
                   <option v-for="code in vigor_list" :key="code" :value="code">{{ code }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Damage</label>
+                <label class="block card-label">Damage</label>
                 <select v-model="localTree.damage" class="input-field w-20">
                   <option v-for="code in damage_list" :key="code" :value="code">{{ code }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Azimuth (°)</label>
+                <label class="block card-label">Azimuth (°)</label>
                 <input v-model.number="localTree.azimuth" type="number" step="0.1" class="input-field w-20">
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Distance (ft)</label>
+                <label class="block card-label">Distance (ft)</label>
                 <input v-model.number="localTree.distance" type="number" step="0.1" class="input-field w-20">
               </div>
             </div>
             <div class="col-span-full mt-4">
-              <label class="block text-sm font-medium text-gray-700">Notes</label>
+              <label class="block card-label">Notes</label>
               <textarea v-model="localTree.notes" placeholder="Any additional notes..." class="input-field w-full" rows="1"></textarea>
             </div>
             <div class="pt-2 flex justify-end">
@@ -1088,11 +1091,11 @@
       ],
       emits: ['create-tree', 'update-tree', 'delete-tree'],
       template: `
-        <div class="bg-white p-1 overflow-x-auto">
+        <div class="p-1 overflow-x-auto">
           <!--<h2 class="text-xl font-semibold mb-2">Tree Table</h2>-->
           <table class="border-collapse table-auto min-w-full"
           @keyup.esc="cancelEditing">
-            <thead class="text-center text-sm sm:text-base uppercase font-medium text-slate-500">
+            <thead class="table-head">
               <tr>
                   <th class="w-8">TR</th>
                   <th class="w-10">PF</th>
@@ -1115,96 +1118,96 @@
                   <th class="w-14">Actions</th>
               </tr>
             </thead>
-            <tbody class="bg-white text-sm sm:text-base">
+            <tbody class="">
               <tr v-for="tree in localTrees" :key="tree.id" @click="startEditing(tree)"
-                class="hover:bg-lime-100 cursor-pointer py-0"
+                class="table-row cursor-pointer py-0"
                 :class="getRowClass(tree)">
-                  <td class="compact-td text-center min-w-6">{{ tree.treeNumber }}</td>
-                  <td class="compact-td text-center min-w-10">
+                  <td class="table-data text-center min-w-6">{{ tree.treeNumber }}</td>
+                  <td class="table-data text-center min-w-10">
                       <div v-if="!isEditing(tree.id)" class="">{{ tree.design_code }}</div>
                       <select v-else v-model="editingTree.design_code" class="">
                           <option v-for="val in design_code_list" :key="val" :value="val">{{ val }}</option>
                       </select>
                   </td>
-                  <td class="compact-td min-w-12">
+                  <td class="table-data min-w-12">
                       <div v-if="!isEditing(tree.id)" class="table-field w-12">{{ tree.species }}</div>
                       <select v-else v-model="editingTree.species" class="table-field">
                           <option v-for="val in species_list" :key="val" :value="val">{{ val }}</option>
                       </select>
                   </td>
-                  <td class="compact-td min-w-12">
+                  <td class="table-data min-w-12">
                       <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.status }}</div>
                       <select v-else v-model="editingTree.status" class="table-field">
                           <option v-for="val in status_list" :key="val" :value="val">{{ val }}</option>
                       </select>
                   </td>
-                  <td class="compact-td min-w-10">
+                  <td class="table-data min-w-10">
                       <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.diameter }}</div>
                       <input v-else v-model.number="editingTree.diameter" type="number" class="table-field">
                   </td>
-                  <td class="compact-td min-w-8">
+                  <td class="table-data min-w-8">
                       <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.form_point }}</div>
                       <input v-else v-model.number="editingTree.form_point" type="number" class="table-field">
                   </td>
-                  <td class="compact-td min-w-8">
+                  <td class="table-data min-w-8">
                       <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.form_factor }}</div>
                       <input v-else v-model.number="editingTree.form_factor" type="number" class="table-field">
                   </td>
-                  <td class="compact-td w-10">
+                  <td class="table-data w-10">
                       <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.bole_diam }}</div>
                       <select v-else v-model="editingTree.bole_diam" class="table-field">
                           <option v-for="val in bole_diam_codes" :key="val" :value="val">{{ val }}</option>
                       </select>
                   </td>
-                  <td class="compact-td min-w-12">
+                  <td class="table-data min-w-12">
                       <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.bole_height }}</div>
                       <input v-else v-model.number="editingTree.bole_height" type="number" class="table-field">
                   </td>
-                  <td class="compact-td min-w-12">
+                  <td class="table-data min-w-12">
                       <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.total_height }}</div>
                       <input v-else v-model.number="editingTree.total_height" type="number" class="table-field">
                   </td>
-                  <td class="compact-td min-w-10">
+                  <td class="table-data min-w-10">
                       <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.age }}</div>
                       <input v-else v-model.number="editingTree.age" type="number" class="table-field">
                   </td>
-                  <td class="compact-td min-w-14">
+                  <td class="table-data min-w-14">
                       <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.crown_position }}</div>
                       <select v-else v-model="editingTree.crown_position" class="table-field">
                           <option v-for="val in crown_position_list" :key="val" :value="val">{{ val }}</option>
                       </select>
                   </td>
-                  <td class="compact-td min-w-10">
+                  <td class="table-data min-w-10">
                       <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.crown_ratio }}</div>
                       <select v-else v-model="editingTree.crown_ratio" class="table-field">
                           <option v-for="val in crown_ratio_list" :key="val" :value="val">{{ val }}</option>
                       </select>
                   </td>
-                  <td class="compact-td min-w-10">
+                  <td class="table-data min-w-10">
                       <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.vigor }}</div>
                       <select v-else v-model="editingTree.vigor" class="table-field">
                           <option v-for="val in vigor_list" :key="val" :value="val">{{ val }}</option>
                       </select>
                   </td>
-                  <td class="compact-td min-w-14">
+                  <td class="table-data min-w-14">
                       <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.damage }}</div>
                       <select v-else v-model="editingTree.damage" class="table-field">
                           <option v-for="val in damage_list" :key="val" :value="val">{{ val }}</option>
                       </select>
                   </td>
-                  <td class="compact-td min-w-12">
+                  <td class="table-data min-w-12">
                       <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.azimuth }}</div>
                       <input v-else v-model.number="editingTree.azimuth" type="number" class="table-field">
                   </td>
-                  <td class="compact-td min-w-10">
+                  <td class="table-data min-w-10">
                       <div v-if="!isEditing(tree.id)" class="table-field">{{ tree.distance }}</div>
                       <input v-else v-model.number="editingTree.distance" type="number" class="table-field">
                   </td>
-                  <td class="compact-td min-w-30 max-w-30">
-                      <div v-if="!isEditing(tree.id)" class="table-text">{{ tree.notes }}</div>
+                  <td class="table-data min-w-30 max-w-30">
+                      <div v-if="!isEditing(tree.id)" class="text-left truncate">{{ tree.notes }}</div>
                       <input v-else v-model="editingTree.notes" type="text" class="table-text">
                   </td>
-                  <td class="compact-td font-medium">
+                  <td class="table-data font-medium">
                       <div v-if="isEditing(tree.id)" class="flex items-center space-x-2">
                           <button @click.stop="saveChanges" class="text-teal-600 hover:text-teal-900"><i class="pi pi-check"></i></button>
                           <button @click.stop="cancelEditing" class="text-gray-600 hover:text-gray-900"><i class="pi pi-times"></i></button>
@@ -1269,10 +1272,9 @@
 
         const getRowClass = (tree) => {
           if (editingTree && tree.id===editingTree.id) {
-            console.log('tr-active')
-            return 'tr-active'
+            return 'table-row-active'
           } else {
-            return 'tr-inactive'
+            return 'table-row-inactive'
           }
 
         }
@@ -1353,37 +1355,38 @@
       components: { TreeEditForm, ConfirmationModal, NavBar, TreeTable },
       template: `
         <div>
-          <NavBar :breadcrumbs="breadcrumbs" @import="importProject" @about="showAbout"/>
+          <NavBar :breadcrumbs="breadcrumbs" :app_version="app_version" @import="importProject" @about="showAbout"/>
           <div v-if="plot.id" class="mt-0">
             <!-- Confirmation Modal display -->
             <ConfirmationModal v-if="confirmInfo.show" title="Delete Tree" message="Are you sure you want to delete this tree? This action cannot be undone." @confirm="handleDeleteConfirm" @cancel="confirmInfo.show = false"/>
 
             <!-- Tabs for Tree Data Management -->
-            <div class="mb-0 border-b border-gray-200 px-2">
+            <div class="border-b px-2">
               <nav class="-mb-px flex space-x-4" aria-label="Tabs">
-                <button @click="activeTab = 'list'" :class="[activeTab === 'list' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-2 border-b-2 font-medium text-sm']">List ({{ trees.length }})</button>
-                <button @click="activeTab = 'table'" :class="[activeTab === 'table' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-2 border-b-2 font-medium text-sm']">Table</button>
-                <button @click="activeTab = 'map'" :class="[activeTab === 'map' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-2 border-b-2 font-medium text-sm']">Map</button>
+                <button @click="activeTab = 'list'" :class="[activeTab === 'list' ? 'tab-active' : 'tab-inactive']" class="tab-item">List ({{ trees.length }})</button>
+                <button @click="activeTab = 'table'" :class="[activeTab === 'table' ? 'tab-active' : 'tab-inactive']" class="tab-item">Table</button>
+                <button @click="activeTab = 'map'" :class="[activeTab === 'map' ? 'tab-active' : 'tab-inactive']" class="tab-item">Map</button>
               </nav>
             </div>
 
             <!-- Tree Map Tab Content -->
-            <div v-show="activeTab === 'map'" class="bg-white p-1">
+            <div v-show="activeTab === 'map'" class="tab-content p-1">
               <!--<h2 class="text-xl font-semibold mb-2">Visual Tree Entry</h2>-->
-              <p class="text-sm text-gray-500 mb-2">Tap on the canvas below to add a tree visually. A new tree will be created and can be edited in the 'Recorded Trees' tab.</p>
+              <!--<p class="text-sm mb-2">Tap on the canvas below to add a tree visually. A new tree will be created and can be edited in the 'Recorded Trees' tab.</p>-->
+              <p class="text-sm mb-2">Tap on the canvas below to add a tree visually.</p>
               <canvas ref="plotCanvas" class="plot-canvas w-full" @click="handleCanvasClick"></canvas>
             </div>
 
             <!-- Recorded Trees Tab Content -->
-            <div v-if="activeTab === 'list'" class="bg-white p-1">
+            <div v-if="activeTab === 'list'" class="tab-content p-1">
               <!--<h2 class="text-xl font-semibold mb-2 mt-4">Recorded Trees</h2>-->
               <ul class="space-y-1 max-h-[60vh] overflow-y-auto mb-1">
-                <li v-if="trees.length === 0" class="text-center text-gray-500 py-8">No trees recorded for this plot yet.</li>
-                <li v-for="tree in sortedTrees" :key="tree.id" class="bg-gray-50 border border-gray-200">
-                  <div @click="selectTreeForEditing(tree)" class="p-1 cursor-pointer flex justify-between items-center" :class="editingTreeId === tree.id ? 'bg-lime-200' : 'hover:bg-gray-100'">
-                    <div><p class="font-bold">{{ tree.treeNumber }}) {{ tree.design_code || '--'}} - {{ tree.species || 'N/A' }} - {{ tree.diameter || 'N/A' }} in - {{ tree.status || 'N/A' }}</p></div>
+                <li v-if="trees.length === 0" class="text-center card-text py-8">No trees recorded for this plot yet.</li>
+                <li v-for="tree in sortedTrees" :key="tree.id" class="card">
+                  <div @click="selectTreeForEditing(tree)" class="cursor-pointer flex justify-between items-center card-header" :class="editingTreeId === tree.id ? '' : 'card-header-hover'">
+                    <div class="">{{ tree.treeNumber }}) {{ tree.design_code || '--'}} - {{ tree.species || 'N/A' }} - {{ tree.diameter || 'N/A' }} in - {{ tree.status || 'N/A' }}</div>
                     <div class="flex items-center space-x-2">
-                      <i :class="editingTreeId === tree.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" class="h-5 w-5 text-gray-500"></i>
+                      <i :class="editingTreeId === tree.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" class="h-5 w-5"></i>
                     </div>
                   </div>
                   <TreeEditForm
@@ -1406,98 +1409,98 @@
 
               <!-- New Tree Form -->
               <!-- TODO: Use the TreeEditForm component for consistency -->
-              <div class="bg-lime-100 mb-1 p-2 border border-gray-200">
+              <div class="card mb-1 p-2">
                 <h2 class="text-xl font-semibold mb-2">Add Tree</h2>
                 <form @submit.prevent="addTreeByAzimuth" class="grid grid-cols-3 md:grid-cols-7 lg:grid-cols-11 gap-2 items-end mt-2 mr-6">
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Sample Code</label>
+                    <label class="block card-label">Plot Code</label>
                     <select v-model="treeAddForm.design_code" class="input-field w-20" required>
                       <option disabled value="">Select</option>
                       <option v-for="code in design_code_list" :key="code" :value="code">{{ code }}</option>
                     </select>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Species</label>
+                    <label class="block card-label">Species</label>
                     <select v-model="treeAddForm.species" class="input-field w-20" required>
                       <option disabled value="">Select</option>
                       <option v-for="code in species_list" :key="code" :value="code">{{ code }}</option>
                     </select>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Status</label>
+                    <label class="block card-label">Status</label>
                     <select v-model="treeAddForm.status" class="input-field w-20" required>
                       <option disabled value="">Select</option>
                       <option v-for="code in status_list" :key="code" :value="code">{{ code }}</option>
                     </select>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Count</label>
+                    <label class="block card-label">Count</label>
                     <input v-model="treeAddForm.count" type="number" class="input-field w-20" required>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">DBH (in)</label>
+                    <label class="block card-label">DBH (in)</label>
                     <input v-model.number="treeAddForm.dbh" type="number" step="0.1" class="input-field w-20" required>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Form Point</label>
+                    <label class="block card-label">Form Point</label>
                     <input v-model.number="treeAddForm.form_point" type="number" step="0.1" class="input-field w-20" required>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Form Factor</label>
+                    <label class="block card-label">Form Factor</label>
                     <input v-model.number="treeAddForm.form_factor" type="number" step="0.1" placeholder="e.g., 85.2" class="input-field w-20">
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Bole Diam</label>
+                    <label class="block card-label">Bole Diam</label>
                     <select v-model="treeAddForm.bole_diam" class="input-field w-20">
                       <option v-for="code in bole_diam_codes" :key="code" :value="code">{{ code }}</option>
                     </select>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Bole Ht.</label>
+                    <label class="block card-label">Bole Ht.</label>
                     <input v-model.number="treeAddForm.bole_height" type="number" step="0.1" placeholder="e.g., 99" class="input-field w-20">
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Total Ht.</label>
+                    <label class="block card-label">Total Ht.</label>
                     <input v-model.number="treeAddForm.total_height" type="number" step="0.1" placeholder="e.g., 120.5" class="input-field w-20">
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Age</label>
+                    <label class="block card-label">Age</label>
                     <input v-model.number="treeAddForm.bh_age" type="number" step="1.0" placeholder="e.g., 42" class="input-field w-20">
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Crown Pos.</label>
+                    <label class="block card-label">Crown Pos.</label>
                     <select v-model="treeAddForm.crown_position" class="input-field w-20">
                       <option v-for="code in crown_position_list" :key="code" :value="code">{{ code }}</option>
                     </select>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Crown Ratio</label>
+                    <label class="block card-label">Crown Ratio</label>
                     <select v-model="treeAddForm.crown_ratio" class="input-field w-20">
                       <option v-for="code in crown_ratio_list" :key="code" :value="code">{{ code }}</option>
                     </select>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Vigor</label>
+                    <label class="block card-label">Vigor</label>
                     <select v-model="treeAddForm.vigor" class="input-field w-20">
                       <option v-for="code in vigor_list" :key="code" :value="code">{{ code }}</option>
                     </select>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Damage</label>
+                    <label class="block card-label">Damage</label>
                     <select v-model="treeAddForm.damage" class="input-field w-20">
                       <option v-for="code in damage_list" :key="code" :value="code">{{ code }}</option>
                     </select>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Azimuth (°)</label>
+                    <label class="block card-label">Azimuth (°)</label>
                     <input v-model.number="treeAddForm.azimuth" type="number" step="0.1" class="input-field w-20" required>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Distance (ft)</label>
+                    <label class="block card-label">Distance (ft)</label>
                     <input v-model.number="treeAddForm.distance" type="number" step="0.1" class="input-field w-20" required>
                   </div>
                   <div class="col-span-full">
-                    <label class="block text-sm font-medium text-gray-700">Notes</label>
+                    <label class="block card-label">Notes</label>
                     <textarea v-model="treeAddForm.notes" placeholder="Any additional notes..." class="input-field w-full" rows="1"></textarea>
                   </div>
                   <!--<button type="submit" class="btn btn-secondary">
@@ -1513,7 +1516,7 @@
             </div>
 
             <!-- Tree Table Tab Content -->
-            <div v-if="activeTab === 'table'" class="bg-white">
+            <div v-if="activeTab === 'table'" class="tab-content">
                 <TreeTable
                   :trees="sortedTrees"
                   :design_code_list="design_code_list"
@@ -1835,7 +1838,7 @@
           crown_position_list, crown_ratio_list, vigor_list, damage_list,
           sortedTrees, plotCanvas, handleCanvasClick, selectTreeForEditing, handleSaveTree, handleDeleteTree,
           nextTreeNumber, treeAddForm, addTreeByAzimuth, confirmInfo, handleDeleteConfirm, activeTab, editingTreeId,
-          breadcrumbs, importProject, showAbout, handleCreateTable
+          breadcrumbs, app_version, importProject, showAbout, handleCreateTable
         };
       }
     };

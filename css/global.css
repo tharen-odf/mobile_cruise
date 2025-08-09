@@ -1,37 +1,96 @@
 @import "tailwindcss";
 
 /* Custom styles for the plot canvas */
-.plot-canvas {
-  border: 2px solid #d1d5db;
+.plot-canvas { @apply
+  border border-2 border-gray-300 dark:border-gray-900
+  bg-gray-200 dark:bg-gray-600;
+
   cursor: crosshair;
-  background-color: #f9fafb;
+  /* background-color: #f9fafb; */
   touch-action: none; /* Prevent default touch actions like scrolling */
+}
+
+body { @apply
+  bg-gray-700
+}
+
+nav {@apply
+  dark:bg-gray-700 dark:text-teal-400
+}
+.nav-text {@apply font-thin
+  text-teal-600
+  dark:text-teal-400
+}
+.nav-menu-button {@apply
+  text-teal-600 hover:bg-gray-100
+  dark:text-teal-400 dark:hover:bg-gray-600
+}
+
+.tab-content {@apply bg-white dark:bg-gray-700 dark:text-gray-200}
+.tab-item {@apply whitespace-nowrap py-2 border-b-2 font-medium text-sm}
+.tab-active {@apply
+  border-teal-500 text-teal-600
+  dark:border-teal-400 dark:text-teal-400
+}
+.tab-inactive {@apply border-transparent
+  text-gray-500 hover:text-gray-700 hover:bg-gray-700
+  dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-200
 }
 
 /* Tailwind-like button styles */
 .btn { @apply inline-flex items-center justify-center px-2 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2; }
-.btn-primary { @apply bg-teal-600 hover:bg-teal-700 focus:ring-teal-500; }
-.btn-secondary { @apply bg-gray-600 hover:bg-gray-700 focus:ring-gray-500; }
-.btn-danger { @apply bg-red-600 hover:bg-red-700 focus:ring-red-500; }
+.btn-primary { @apply text-gray-200 bg-teal-600 hover:bg-teal-700 focus:ring-teal-400; }
+.btn-secondary { @apply bg-gray-600 hover:bg-gray-700 focus:ring-gray-400; }
+.btn-danger { @apply bg-red-600 hover:bg-red-700 focus:ring-red-400; }
 
 /* Tailwind-like input field styles */
-.input-field { @apply mt-1 block w-full px-1 py-0 bg-gray-200 border border-gray-300 placeholder-gray-400 focus:outline-none focus:ring-gray-700 focus:border-gray-700 sm:text-sm; }
-.table-field { @apply bg-transparent text-center w-full h-full px-1}
-.table-text { @apply bg-transparent text-left truncate w-full h-full px-1}
+.input-field { @apply
+  mt-1 block w-full px-1 py-0 border sm:text-sm
+  focus:outline-none focus:ring-gray-700 focus:border-gray-700
+  bg-gray-200 border-gray-300 placeholder-gray-400 text-gray-900
+  dark:bg-gray-500 dark:border-gray-600 dark:placeholder-gray-200 dark:text-gray-200
+}
 
 /* Tailwind-like card styles */
-.card { @apply bg-white shadow-sm p-1 m-1; }
+.card { @apply bg-white dark:bg-gray-600 shadow-sm p-1 m-1; }
+.card-label {@apply text-gray-500 dark:text-white text-xs p-1}
+.card-text {@apply text-gray-500 dark:text-gray-200}
+.card-header {@apply font-normal text-lg text-teal-600 dark:text-teal-400}
+.card-header-hover {@apply hover:bg-gray-100 dark:hover:bg-gray-700}
+.card-menu-button {@apply
+  text-teal-600 hover:bg-gray-100
+  dark:text-teal-200 dark:hover:bg-gray-700
+}
 
 /* Modal specific styles */
 .modal-container { @apply fixed inset-0 z-999 w-screen h-screen flex items-center justify-center bg-gray-900/50 transition-opacity; }
 .modal-panel { @apply rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg; }
 
-.compact-th {@apply px-0 py-0 mx-0}
-.compact-td {@apply border border-slate-400 p-0 truncate}
-.compact-tr {@apply px-0 py-0.5 gap-2}
+.menu-text {@apply
+  text-sm
+  text-gray-600 hover:bg-gray-200
+  dark:text-gray-200 dark:hover:bg-gray-600
+}
 
-.tr-active {@apply bg-gray-200}
-.tr-inactive {}
+.table-head {@apply uppercase text-center text-sm sm:text-base text-teal-600 dark:text-teal-400}
+.table-row {@apply text-sm sm:text-base
+  hover:bg-gray-200
+  dark:hover:bg-gray-500
+}
+.table-row-active {@apply border-gray-900 dark:border-teal-400}
+.table-row-inactive {}
+.table-data {@apply text-sm sm:text-base border text-center w-full h-full px-1
+  bg-gray-200 border-gray-300 placeholder-gray-600 text-gray-900
+  dark:bg-gray-600 dark:border-gray-900 dark:placeholder-gray-200 dark:text-gray-200
+}
+
+.table-field { @apply bg-transparent text-center w-full h-full px-1}
+.table-text { @apply bg-transparent text-left truncate w-full h-full px-1}
+
+/* .compact-th {@apply px-0 py-0 mx-0 text-teal-600 dark:text-teal-400}
+.compact-td {@apply border border-slate-400 p-0 truncate}
+.compact-tr {@apply px-0 py-0.5 gap-2} */
+
 
 /* Hide number spinners */
 @layer base {
